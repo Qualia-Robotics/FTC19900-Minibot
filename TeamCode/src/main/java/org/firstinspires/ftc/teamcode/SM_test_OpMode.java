@@ -25,7 +25,7 @@ public class SM_test_OpMode extends LinearOpMode {
         IDLE,
         EXTEND,
         ABTTORET,
-        RDY2SCORE,
+        SCORE,
         XFER
     }
     private IntakeAndOuttake IOState = IntakeAndOuttake.IDLE;
@@ -49,6 +49,7 @@ public class SM_test_OpMode extends LinearOpMode {
     Servo intake = null;
     Servo xfer = null;
     double lasttime = 0;
+    boolean xferready = false;
     void update(){
         switch (IOState){
             case IDLE:
@@ -62,20 +63,14 @@ public class SM_test_OpMode extends LinearOpMode {
             case ABTTORET:
                 intakeTilt.setPosition(0.98);
                 if (runtime.seconds()-lasttime>0.5) {
-                    intake.setPosition(0.15);
+                    intake.setPosition(0.13);
                 }
                 break;
 
             case XFER:
-                if (runtime.seconds()-lasttime>0.3) {
-                    xfer.setPosition(0);
-                    intake.setPosition(0);
-                    intakeTilt.setPosition(0.1);
-                    if (runtime.seconds()-lasttime>0.3) {
-                        rightIntake.setPosition(0.70);
-                        leftIntake.setPosition(0.30);
-                    }
-                }
+                xfer.setPosition(0);
+                intake.setPosition(0);
+                intakeTilt.setPosition(0.1);
                 break;
 
             case RETRACTING:
@@ -86,12 +81,15 @@ public class SM_test_OpMode extends LinearOpMode {
                 if (runtime.seconds()-lasttime>0.3) {
                     horSlideLeft.setPosition(0.33);
                     horSlideRight.setPosition(0.73);
-                }
+                    }
                 break;
 
-            case RDY2SCORE:
+            case SCORE:
                 rightIntake.setPosition(0.70);
                 leftIntake.setPosition(0.30);
+                if (runtime.seconds()-lasttime>0.45) {
+                    xfer.setPosition(0.15);
+                }
                 break;
 
             case EXTEND:
@@ -118,12 +116,11 @@ public class SM_test_OpMode extends LinearOpMode {
         leftSlideMotor = hardwareMap.dcMotor.get("leftSlideMotor");
         rightSlideMotor = hardwareMap.dcMotor.get("rightSlideMotor");
         //encoders
-
         // Reverse Motor direction for proper driving
-        frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD); // og rev
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE); // og for
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE); // og for
-        backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD); // og rev
+        frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -132,10 +129,6 @@ public class SM_test_OpMode extends LinearOpMode {
         leftSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //encoders
-        leftSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // Servos
         leftIntake = hardwareMap.servo.get("leftIntake");
         rightIntake = hardwareMap.servo.get("rightIntake");
@@ -179,25 +172,28 @@ public class SM_test_OpMode extends LinearOpMode {
                 powerMultiplier = 1.0; // Set to full powa!
             }
 
-
-            if (gamepad1.triangle){
-                runtime.reset();
-                IOState = IntakeAndOuttake.RETRACTING;
-            }
             if (gamepad1.square){
                 IOState = IntakeAndOuttake.EXTEND;
             }
-            if (gamepad1.circle){
+            if (gamepad1.triangle){
                 runtime.reset();
                 IOState = IntakeAndOuttake.ABTTORET;
+            }
+            if (gamepad1.circle){
+                runtime.reset();
+                IOState = IntakeAndOuttake.RETRACTING;
             }
             if (gamepad1.cross){
                 runtime.reset();
                 IOState = IntakeAndOuttake.XFER;
             }
+            if (gamepad1.right_bumper){
+                runtime.reset();
+                IOState = IntakeAndOuttake.SCORE;
+            }
 
-            double slidePowerUp = gamepad2.right_trigger;  // Get the right trigger value (0.0 to 1.0)
-            double slidePowerDown = gamepad2.left_trigger; // Get the left trigger value (0.0 to 1.0)
+            double slidePowerUp = gamepad1.left_trigger;  // Get the right trigger value (0.0 to 1.0)
+            double slidePowerDown = gamepad1.right_trigger; // Get the left trigger value (0.0 to 1.0)
 
             // hopefully up loooool
             // move both slides at the same time to make slide NOT crooked.
