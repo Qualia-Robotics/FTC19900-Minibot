@@ -87,7 +87,7 @@ public class SM_test_OpMode extends LinearOpMode {
             case SCORE:
                 rightIntake.setPosition(0.70);
                 leftIntake.setPosition(0.30);
-                if (runtime.seconds()-lasttime>0.45) {
+                if (runtime.seconds()-lasttime>0.6) {
                     xfer.setPosition(0.15);
                 }
                 break;
@@ -121,13 +121,6 @@ public class SM_test_OpMode extends LinearOpMode {
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //encoders
         // Servos
         leftIntake = hardwareMap.servo.get("leftIntake");
