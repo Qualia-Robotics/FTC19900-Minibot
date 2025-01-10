@@ -26,7 +26,11 @@ public class SM_test_OpMode extends LinearOpMode {
         EXTEND,
         ABTTORET,
         SCORE,
-        XFER
+        XFER,
+        SLIDE_UP_AND_STAY,
+        SLIDE_DOWN_AND_STAY,
+        OFF_THE_WALL,
+        GRAB
     }
     private IntakeAndOuttake IOState = IntakeAndOuttake.IDLE;
     private ElapsedTime runtime = new ElapsedTime();
@@ -102,6 +106,18 @@ public class SM_test_OpMode extends LinearOpMode {
                 horSlideRight.setPosition(0.973);
                 break;
 
+            case OFF_THE_WALL:
+                rightIntake.setPosition(0.95);
+                leftIntake.setPosition(0.5);
+                xfer.setPosition(0.20);
+                break;
+
+            case GRAB:
+                xfer.setPosition(0);
+                if (runtime.seconds()-lasttime>0.6) {
+                    rightIntake.setPosition(0.70);
+                    leftIntake.setPosition(0.30);
+                }
         }
     }//
     @Override
@@ -121,6 +137,13 @@ public class SM_test_OpMode extends LinearOpMode {
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //encoders
         // Servos
         leftIntake = hardwareMap.servo.get("leftIntake");
@@ -141,9 +164,9 @@ public class SM_test_OpMode extends LinearOpMode {
         while (opModeIsActive()) {
             update();
             //machine.update();
-            double y = -gamepad1.left_stick_y;
-            double x = -gamepad1.right_stick_x;
-            double rx = -gamepad1.left_stick_x;
+            double y = -gamepad2.left_stick_y;
+            double x = -gamepad2.right_stick_x;
+            double rx = -gamepad2.left_stick_x;
             boolean intakeToggle = false;
             boolean prevTri = false;
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
@@ -152,7 +175,7 @@ public class SM_test_OpMode extends LinearOpMode {
             double frontRightPower = (-y - x - rx) / denominator;
             double backRightPower = (-y + x - rx) / denominator;
 
-            if (gamepad1.left_bumper) {
+            if (gamepad2.left_bumper) {
                 if (!isHalfPower) { // Only change state if it was previously false
                     powerMultiplier = powerMultiplier == 0.5 ? 1.0 : 0.5; // Toggle between 25% and 50% driving powa!
                     isHalfPower = true;
@@ -183,6 +206,14 @@ public class SM_test_OpMode extends LinearOpMode {
             if (gamepad1.right_bumper){
                 runtime.reset();
                 IOState = IntakeAndOuttake.SCORE;
+            }
+            if (gamepad1.dpad_down){
+                runtime.reset();
+                IOState = IntakeAndOuttake.OFF_THE_WALL;
+            }
+            if (gamepad1.dpad_up){
+                runtime.reset();
+                IOState = IntakeAndOuttake.GRAB;
             }
 
             double slidePowerUp = gamepad1.left_trigger;  // Get the right trigger value (0.0 to 1.0)
