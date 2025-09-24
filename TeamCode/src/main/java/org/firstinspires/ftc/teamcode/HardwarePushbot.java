@@ -54,6 +54,8 @@ public class HardwarePushbot {
         public DcMotor  rightFrontDriveWheel  = null; //motor for right front wheel
         public DcMotor  rightBackDriveWheel  = null; //motor for right back wheel
 
+        public Servo launcherServo = null; 
+
         
         /* local OpMode members. */
         HardwareMap hwMap           =  null;
