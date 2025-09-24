@@ -48,13 +48,7 @@ public class HardwarePushbot {
 // hello this is testing :)
 
 
-        /* Public OpMode members. */
-        public DcMotor  leftFrontDriveWheel   = null; //motor for left front wheel
-        public DcMotor  leftBackDriveWheel   = null; //motor for left back wheel
-        public DcMotor  rightFrontDriveWheel  = null; //motor for right front wheel
-        public DcMotor  rightBackDriveWheel  = null; //motor for right back wheel
-
-        public Servo launcherServo = null; 
+       public DriveTrain driveTrain;
 
         
         /* local OpMode members. */
@@ -69,33 +63,7 @@ public class HardwarePushbot {
         /* Initialize standard Hardware interfaces */
         public void init(HardwareMap ahwMap) 
         {
-            // Save reference to Hardware map
-            hwMap = ahwMap;
-
-            // Define and Initialize Motors
-            leftFrontDriveWheel  = hwMap.get(DcMotor.class, "leftFrontDriveWheel");
-            leftBackDriveWheel  = hwMap.get(DcMotor.class, "leftBackDriveWheel");
-            rightFrontDriveWheel = hwMap.get(DcMotor.class, "rightFrontDriveWheel");
-            rightBackDriveWheel = hwMap.get(DcMotor.class, "rightBackDriveWheel");
-
-            //left wheels are counterclockwise and because of 90 degree gearboxes, they all are forward
-            leftFrontDriveWheel.setDirection(DcMotor.Direction.FORWARD);// Set to REVERSE if using AndyMark motors
-            leftBackDriveWheel.setDirection(DcMotor.Direction.FORWARD);
-            rightFrontDriveWheel.setDirection(DcMotor.Direction.FORWARD);
-            rightBackDriveWheel.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-
-            // Set all motors to zero power
-            leftFrontDriveWheel.setPower(0);
-            leftBackDriveWheel.setPower(0);
-            rightFrontDriveWheel.setPower(0);
-            rightBackDriveWheel.setPower(0);
-
-            // Set all motors to run without encoders.
-            // May want to use RUN_USING_ENCODERS if encoders are installed.
-            leftFrontDriveWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            leftBackDriveWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightFrontDriveWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightBackDriveWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            driveTrain = new DriveTrain(ahwMap);
         }
     }
 

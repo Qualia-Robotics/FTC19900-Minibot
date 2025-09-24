@@ -29,8 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -49,8 +47,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
 */
 
-@TeleOp(name="Pushbot: Teleop Tank", group="Pushbot")
-public class PushbotTeleopTank_Iterative extends OpMode
+@TeleOp(name="Steering Controls", group="Pushbot")
+public class SteeringControls extends OpMode
 {
     /* Declare OpMode members. */
     HardwarePushbot robot       = new HardwarePushbot(); // use the class created to define a Pushbot's hardware
@@ -93,20 +91,7 @@ public class PushbotTeleopTank_Iterative extends OpMode
         double strafe = gamepad1.left_stick_x; //
         double turn = gamepad1.right_stick_x; //backwards and forwards
 
-        //Controls the speed for going across the field; can be changed if going too slow
-        //strafe is lateral movement!!! Looking forward while moving sideways
-        //if(gamepad1.right_bumper)
-        //{
-        //  forward /= 4;
-        //   strafe /= 4;
-        //   turn /= 4;
-        //}
 
-        double denominator = Math.max(Math.abs(forward) + Math.abs(strafe) + Math.abs(turn), 1);
-
-        robot.rightFrontDriveWheel.setPower((forward - strafe - turn) / denominator);
-        robot.leftFrontDriveWheel.setPower((forward + strafe + turn) / denominator);
-        robot.leftBackDriveWheel.setPower((forward - strafe + turn) / denominator);
-        robot.rightBackDriveWheel.setPower((forward + strafe - turn) / denominator);
+        robot.driveTrain.drive(forward, strafe, turn);
     }
   }
