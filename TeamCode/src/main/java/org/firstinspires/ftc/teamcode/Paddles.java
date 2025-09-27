@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Tars Carousel Test", group = "Robot")
-public class Main extends OpMode {
+public class Paddles extends OpMode {
     public Servo paddles;
     public double paddlePosition = 0.0;
 
