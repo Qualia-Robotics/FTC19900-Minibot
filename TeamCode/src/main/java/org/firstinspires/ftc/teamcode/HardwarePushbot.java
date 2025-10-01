@@ -55,7 +55,7 @@ public class HardwarePushbot {
 
         
         /* local OpMode members. */
-        HardwareMap hwMap           =  null;
+
         private ElapsedTime period  = new ElapsedTime();
 
         /* Constructor */
@@ -66,7 +66,7 @@ public class HardwarePushbot {
         /* Initialize standard Hardware interfaces */
         public void init(HardwareMap ahwMap) 
         {
-            launcher= new BasicBot_Launcher(hwMap, 1);
+            launcher= new BasicBot_Launcher(ahwMap, 1);
 
             driveTrain = new DriveTrain(ahwMap);
         }
