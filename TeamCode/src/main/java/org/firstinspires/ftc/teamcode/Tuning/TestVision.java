@@ -10,7 +10,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ public class TestVision extends LinearOpMode {
 
         Camera camera = new Camera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         Camera.processors_enabled processor = Camera.processors_enabled.ALL;
-        camera.set_pipeline(processor);
+        camera.setPipeline(processor);
         boolean a_debounce = false;
 
         telemetry.setMsTransmissionInterval(100);   // speed up telemetry updates for debugging
@@ -38,15 +37,15 @@ public class TestVision extends LinearOpMode {
                     switch (processor) {
                         case ALL:
                             processor = Camera.processors_enabled.TAG;
-                            camera.set_pipeline(processor);
+                            camera.setPipeline(processor);
                             break;
                         case TAG:
                             processor = Camera.processors_enabled.COLOR;
-                            camera.set_pipeline(processor);
+                            camera.setPipeline(processor);
                             break;
                         case COLOR:
                             processor = Camera.processors_enabled.ALL;
-                            camera.set_pipeline(processor);
+                            camera.setPipeline(processor);
                             break;
                     }
                 }
@@ -95,9 +94,9 @@ public class TestVision extends LinearOpMode {
 
         for (List<Double> blob : color_blobs) {
             telemetry.addLine(String.format("Position: (%f, %f)", blob.get(0), blob.get(1)));
-            telemetry.addLine(String.format("Circularity: %f", blob.get(2)));
+            telemetry.addLine(String.format("Circularity: %f", blob.get(4)));
             telemetry.addLine(String.format("Contour Area: %f", blob.get(3)));
-            telemetry.addLine(String.format("Distance: %f Inches Away", blob.get(4)));
+            telemetry.addLine(String.format("Distance: %f Inches Away", blob.get(2)));
         }
 
         telemetry.update();

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Modules;
 // --- CONSTANTS & OTHER STUFF --- //
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.riptideUtil;
 
 // --- CAMERA --- //
@@ -118,20 +117,29 @@ public class Camera {
                 .addProcessors(tag_processor, blob_processor_purple, blob_processor_green)
                 //.addProcessor(new CameraPipeline(0.047, 578.272, 578.272, 402.145, 221.506, hardwareMap.get(WebcamName.class, "Webcam 1")))
                 .setCamera(cameraname)
-                .setCameraResolution(new Size(640, 480))
+                .setCameraResolution(new Size(riptideUtil.CAMERA_WIDTH, riptideUtil.CAMERA_HEIGHT))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 //.enableCameraMonitoring(true)
                 .setAutoStopLiveView(true)
                 .build();
     }
 
-    public List<AprilTagDetection> get_tag_detections() {
+    public List<AprilTagDetection> getTagDetections() {
         detections = tag_processor.getDetections();
         detections.removeIf(detection -> System.nanoTime() - detection.frameAcquisitionNanoTime > riptideUtil.DETECTION_TIMEOUT);
         return detections;
     }
 
-    public ArrayList<ArrayList<Double>> get_blob_detections() {
+    public ArrayList<ArrayList<Double>> getBlobDetections() {
+        /*
+         * Returns an ArrayList of ArrayLists with 5 elements describing the artifact
+         * They are (in order):
+         *  - x location (on the camera screen)
+         *  - y location (on the camera screen)
+         *  - distance away from the camera (needs tuning)
+         *  - contour area
+         *  - circularity
+         */
         blobs.clear();
         List<ColorBlobLocatorProcessor.Blob> blobs_detected = blob_processor_purple.getBlobs();
         blobs_detected.addAll(blob_processor_green.getBlobs());
@@ -161,7 +169,7 @@ public class Camera {
             Circle circle_fit = blob.getCircle();
             double distance = (riptideUtil.LENS_FOCAL_LEN_INCHES * riptideUtil.ARTIFACT_SIZE_INCHES * 480)
                     / (circle_fit.getRadius() * 2 * riptideUtil.SENSOR_HEIGHT);
-            ArrayList<Double> temp = new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY(), blob.getCircularity(), (double) blob.getContourArea(), distance));
+            ArrayList<Double> temp = new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY(), distance, (double) blob.getContourArea(), blob.getCircularity()));
             blobs.add(temp);
         }
 
@@ -172,7 +180,7 @@ public class Camera {
         return blobs;
     }
 
-    public EditablePose2D localize() {
+    public EditablePose2D getGoalApriltagLocation() {
         for(AprilTagDetection detection : detections) {
             if (!detection.metadata.name.contains("Obelisk")) {
                 return new EditablePose2D(
@@ -181,11 +189,69 @@ public class Camera {
                         DistanceUnit.INCH);
             }
         }
+        return null;
+    }
 
+    public EditablePose2D findNearestArtifact() {
+        return nearestArtifact(0);
+    }
+
+    public EditablePose2D findNearestArtifact(double turret_angle) {
+        return nearestArtifact(turret_angle);
+    }
+
+    private EditablePose2D nearestArtifact(double turret_angle) {
+        /*
+         * This is just so the code looks nice and if there is no turret_angle, it is:
+         *    findNearestArtifact();
+         * instead of:
+         *    findNearestArtifact(0);
+         * This is litterly a minor, insignificant, useless detail and Aaron will probably yell
+         * at me for this and I will probably change this in the future
+         * Future Aaron, I predicted your response, and I chose to do this useless thing.
+         * hahhahahahahhhahahahahahhahahahahahhahahahahahhashashahahahahahahahahahahahahah
+         * ahahahahahahahahahahahahahahahhahahahahahahahahahhahahahahahahahahahahahahahahah
+         * ahahhahahahahahhahahhhahahahahahahah
+         */
+        if(blobs.isEmpty()) {return null;}
+        ArrayList<Double> largest_contour = new ArrayList<>(blobs.get(0));
+
+        double distance = largest_contour.get(2);
+
+        // essentially setting the origin to the center of the screen
+        double delta_x = (double) riptideUtil.CAMERA_WIDTH / 2 - largest_contour.get(0);
+        double delta_y = (double) riptideUtil.CAMERA_HEIGHT / 2 - largest_contour.get(1);
+
+        // relative to the camera
+        double horizontal_distance = delta_x * riptideUtil.HORIZ_FOV / riptideUtil.CAMERA_WIDTH;
+        double vertical_distance = delta_y * riptideUtil.VERT_FOV / riptideUtil.CAMERA_HEIGHT;
+
+        double horizontal_angle_error = Math.atan(horizontal_distance/distance);
+        double vertical_angle_error = Math.atan(vertical_distance/distance);
+
+        // difference between the errors and the camera angle, so this is relative to what ever
+        // the angle of the camera is relative to
+        double horizontal_angle = turret_angle - horizontal_angle_error;
+        double vertical_angle = riptideUtil.CAMERA_ANGLE - vertical_angle_error;
+
+        // relative to whatever the turret_angle is
+        // 0 degrees means relative to the camera or robot (if they are looking in the same direction)
+        // anything else would imply relative to the robot
+        double horizontal_dist = Math.sin(horizontal_angle_error) * distance;
+
+        // relative to the ground
+        double height = Math.sin(vertical_angle) * distance;
+
+        return new EditablePose2D(
+                horizontal_dist,
+                height,
+                0,
+                DistanceUnit.INCH
+        );
     }
 
     // the default is ALL
-    public void set_pipeline(processors_enabled processors) {
+    public void setPipeline(processors_enabled processors) {
         switch (processors) {
             case TAG:
                 vision_portal.setProcessorEnabled(tag_processor, true);
@@ -209,11 +275,11 @@ public class Camera {
         }
     }
 
-    public void stop_streaming() {
+    public void stopStreaming() {
         vision_portal.stopStreaming();
     }
 
-    public void resume_streaming() {
+    public void resumeStreaming() {
         vision_portal.resumeStreaming();
     }
 
