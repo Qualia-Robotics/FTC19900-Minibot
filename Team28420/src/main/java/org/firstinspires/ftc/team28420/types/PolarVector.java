@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.team28420.types;
 
 public class PolarVector {
+    public static PolarVector fromPos(Position pos) {
+        return new PolarVector(Math.atan2(pos.y, pos.x), Math.hypot(pos.x, pos.y));
+    }
 
     private double theta, abs;
 
@@ -30,4 +33,5 @@ public class PolarVector {
         theta %= Math.PI * 2;
         return this;
     }
+
 }

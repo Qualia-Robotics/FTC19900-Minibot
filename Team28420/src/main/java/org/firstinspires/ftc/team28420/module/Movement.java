@@ -2,8 +2,8 @@ package org.firstinspires.ftc.team28420.module;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.team28420.types.PolarVector;
 import org.firstinspires.ftc.team28420.types.WheelsRatio;
 
 public class Movement {
@@ -55,12 +55,32 @@ public class Movement {
     }
 
     public void setup() {
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        //rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        //rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setMotorsMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setMotorsMode(DcMotor.RunMode.RUN_USING_ENCODER);
         setMotorsZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public WheelsRatio vectorToRatios(PolarVector vector, double turn) {
+        double sin = Math.sin(vector.getTheta() - Math.PI / 4);
+        double cos = Math.cos(vector.getTheta() - Math.PI / 4);
+        double max = Math.max(Math.abs(sin), Math.abs(cos));
+
+        double lf = vector.getAbs() * cos / max + turn;
+        double rf = vector.getAbs() * sin / max - turn;
+        double lb = vector.getAbs() * sin / max + turn;
+        double rb = vector.getAbs() * cos / max - turn;
+
+        if ((vector.getAbs() + Math.abs(turn)) > 1) {
+            lf /= vector.getAbs() + Math.abs(turn);
+            rf /= vector.getAbs() + Math.abs(turn);
+            lb /= vector.getAbs() + Math.abs(turn);
+            lb /= vector.getAbs() + Math.abs(turn);
+        }
+
+        return new WheelsRatio<Double>(lf, rf, lb, rb);
     }
 
 }
