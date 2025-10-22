@@ -53,17 +53,19 @@ public class ManualV1 extends OpMode {
 
     void doTelemetry(double[] speeds) {
         telemetry.addData("DryRun", dryRun);
-        telemetry.addData("How to start",   "L1 = TestOnly, L2 = Run");
+        telemetry.addData("How to start",   "L1 = TestOnly, R1 = Run");
         telemetry.addData(
                 "Max Move Speed",   "Move %.2f (DPAD_UP ↑, DPAD_DOWN ↓)", maxMoveSpeed);
         //:: Shoot %.2f :: Intake %.2f", , maxShootPower, maxIntakePower
 
-        telemetry.addData("Front", "LF ❂=%.2f ::: RF ❂=%.2f", speeds[0], speeds[1]);
-        telemetry.addData("Back", "LB ❂=%.2f ::: RB ❂=%.2f ", speeds[2], speeds[3]);
+        telemetry.addData("Front", "LF ❂=%.2f\tRF ❂=%.2f", speeds[0], speeds[1]);
+        telemetry.addData("Back", "LB ❂=%.2f\tRB ❂=%.2f ", speeds[2], speeds[3]);
 
         telemetry.addLine();
-        telemetry.addData("Shooter", "Left=%.2f :::: Right=%.2f (X↑, Y↓)", leftShooterPower, rightShooterPower);
-        telemetry.addData("Intake", "%.2f\t(A↑, B↓)",  intakePower);
+        telemetry.addData(
+                "Shooter", "Left=%.2f :::: Right=%.2f (X↑, Y↓)  === Actual Left %.2f Actual Right %.2f",
+                leftShooterPower, rightShooterPower, leftShooter.getPower(), rightShooter.getPower());
+        telemetry.addData("Intake", "%.2f\t(A↑, B↓) Actual %.2f",  intakePower, intake.getPower());
 
         telemetry.addLine();
         telemetry.addData("LeftStick", "X=%.2f, Y=%.2f", gamepad1.left_stick_x, gamepad1.left_stick_y);
@@ -107,7 +109,7 @@ public class ManualV1 extends OpMode {
         } else if (gamepad1.b) {
             intakePower -= INCREMENT;
             intakePower = Math.max(intakePower, -maxIntakePower);
-        } else if (gamepad1.dpad_right) {
+        } else if (gamepad1.dpad_up) {
             maxMoveSpeed += INCREMENT;
             maxMoveSpeed = Math.min(maxMoveSpeed, 1);
         } else if (gamepad1.dpad_down) {
@@ -130,7 +132,7 @@ public class ManualV1 extends OpMode {
                 (drive + strafe - twist)
         };
 
-        double max = Math.abs(maxMoveSpeed);
+        double max = Math.abs(speeds[0]);
         for (double v : speeds) {
             if (max < Math.abs(v)) max = Math.abs(v);
         }
@@ -140,11 +142,10 @@ public class ManualV1 extends OpMode {
         }
 
         // apply the calculated values to the motors.
-        leftFront.setPower(speeds[0]);
-        rightFront.setPower(speeds[1]);
-        leftBack.setPower(speeds[2]);
-        rightBack.setPower(speeds[3]);
+        leftFront.setPower(speeds[0] * maxMoveSpeed);
+        rightFront.setPower(speeds[1] * maxMoveSpeed);
+        leftBack.setPower(speeds[2] * maxMoveSpeed);
+        rightBack.setPower(speeds[3] * maxMoveSpeed);
         return speeds;
     }
 }
-
