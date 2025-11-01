@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -19,7 +20,11 @@ public class fireWheelTesting extends LinearOpMode {
         while (opModeIsActive()) {
             if (gamepad1.a) {
                 fireWheel.setPower(1.0);   // run motor full power
-            } else {
+            }
+            else if (gamepad1.b) {
+                fireWheel.setPower(-1.0);   // run motor full power
+            }
+            else {
                 fireWheel.setPower(0.0);   // stop motor when not pressing A
             }
         }
