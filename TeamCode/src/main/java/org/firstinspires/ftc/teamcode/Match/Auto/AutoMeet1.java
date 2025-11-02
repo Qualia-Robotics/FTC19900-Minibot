@@ -22,215 +22,111 @@
  * SOFTWARE.
  */
 
-/*
-  A basic program that:
-  <ul>
-  <li> travels in a linear movement</li>
-  <li> turns 90 degrees when the touch sensor is pressed</li>
-  <li> the turn direction is controlled with bumper buttons on the gamepad</li>
-  <li> relies on IMU data to travel in a straight line as well to perform the turns</li>
-  <li> displays a few status messages</li>
-  </ul>
-  @author modified by armw
- * @version 1.2 - Converted to Universal IMU Interface
- * @param none
- * @return none
- * @exception none
- * @see https://stemrobototics.cs.pdx.edu/node/7266
- * <p>
- * This program registers as Autonomous OpMode in the FtcRobotController app.
- * The robot travels forward in a linear movement. When the touch sensor is pressed
- * it backs up a little enable a 90 degree turn. The bumper buttons on gamepad2
- * select the direction of the turn - left or right.
- * The program relies on the IMU sensor in the REV Robotics Control Hub that
- * runs the FtcRobotController app.
- * </p>
- * <p>
- * forward travel:
- * ^                   ^
- * |                   |
- * 0 left front        2 right front
- * X
- * ^                   ^
- * |                   |
- * 1 left back         3 right back
- *
- * hard coded numbers to avoid the use of enum construct for such a simple program
- * motor positions:
- * <ul>
- * <li>0 = left front (or forward or fore)</li>
- * <li>1 = left back (or rear or aft)</li>
- * <li>2 = right front (or forward or fore)</li>
- * <li>3 = right back (or rear or aft)</li>
- *</ul>
- * Initialize the hardware variables. Note that the strings used here as parameters
- * to 'get' must correspond to the names assigned during the robot configuration
- * step (using the FTC Robot Controller app on the phone).
- * Moon Mechanics nomenclature options for motors:
- * <device><port|starboard>|<stern/aft>
- * <role><qualifier>
- * </p>
- * @see https://first-tech-challenge.github.io/SkyStone/com/qualcomm/robotcore/hardware/DcMotor.html
- *
- * @see https://docs.revrobotics.com/rev-control-system/sensors/encoders/motor-based-encoders
- * HD Hex Motor (REV-41-1291) Encoder Specifications
- * HD Hex Motor Reduction                  Bare Motor      40:1            20:1
- * Free speed, RPM                         6,000           150             300
- * Cycles per rotation of encoder shaft    28 (7 Rises)    28 (7 Rises)    28 (7 Rises)
- * Ticks per rotation of output shaft      28              1120            560
- * TICKS_PER_MOTOR_REV = 560            REV HD Hex UltraPlanetary 20:1 cartridge
- * DRIVE_GEAR_REDUCTION = 1.0
- * WHEEL_DIAMETER_MM = 75.0             REV Mecanum wheel
- * MM_TO_INCH = 0.03937008
- * TICKS_PER_INCH = 33.4308289114498; // SWYFT Drive v2; goBILDA 5203 series, 12.7:1, 86 mm
- * <p>
- * Hardware map
- * Device name      Control Hub setting
- * imu              I2C bus 0
- * motorLeftFront   port 0
- * motorLeftBack    port 1
- * motorRightFront  port 2
- * motorRightBack   port 3
- * sensorTouch      n/a
- * sensorLED        n/a
- * gamepad2         USB2
- * </p>
- * Gamepad buttons
- * SDK Variable	Xbox Style	PS4 Style	    Position    Unicode
- * gamepadX.a	A (Green)	× (Cross)	    Bottom      \u2715 - to confirm
- * gamepadX.b	B (Red) 	◯ (Circle)	    Right       \u25ef - for BLUE
- * gamepadX.x	X (Blue)	□ (Square)	    Left        \u25a1 - for RED
- * gamepadX.y	Y (Yellow)	△ (Triangle)    Top         \u25b3 - unused
- */
-
 package org.firstinspires.ftc.teamcode.Match.Auto;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.IMU; // NEW: Universal IMU Interface
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot; // Required for setup
-
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;// For reading IMU data
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-// AprilTag Imports
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
-// --- Datalogger Imports ---
-import org.firstinspires.ftc.teamcode.Utility.Datalogger;
-// --- IMU Universal Imports ---
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot; // NEW: For IMU mounting config
-import com.qualcomm.robotcore.util.Range;
+@Autonomous(name="Meet 1 Auto", group="Match", preselectTeleOp="TeleOpPreviewEvent")
 
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;       // NEW: To get angles from IMU
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES; // Static import for clarity
-// --------------------------
-
-@Autonomous(name = "Meet 1 Auto", group = "Match", preselectTeleOp="TeleOpPreviewEvent")
-//@Disabled
 public class AutoMeet1 extends LinearOpMode {
-    private final String TAG = this.getClass().getSimpleName();
-    private Datalogger datalogger = null;
-    // Logging
-    // --- START: MODIFIED DATALOG DECLARATION ---
-    // Change to initialize in runOpMode() instead of here
-    private Datalog datalog = null;
-    private int loopCounter = 0;
-    private String opModeStatus = "INIT";
-    // --- END: MODIFIED DATALOG DECLARATION ---
-    // --- FSM State Definitions ---
-    enum AutoState {
-        TRAVEL, // New: Uses AprilTags for navigation
-        LAUNCH,
-        LEAVE,
-        AUTO_COMPLETE
-    }
-    // --- AprilTag Control Constants ---
-    private static final int APRIL_TAG_ID = 20;              // Target AprilTag ID (change as needed)
-    private static final double MAX_POWER = 0.6;             // Max absolute power limit for motors
-    private static final double HEADING_TOLERANCE = 1.0;     // Angular tolerance (degrees)
-    private static final double RANGE_TOLERANCE = 0.5;       // Distance tolerance (inches)
+    private static final String TAG = AutoMeet1.class.getSimpleName();
 
-    // --- Drivetrain Hardware Components ---
+    // Enumerations for Alliance and Position
+    enum Alliance {
+        RED,
+        BLUE
+    }
+
+    enum Position {
+        POS1,
+        POS2,
+        POS3
+    }
+
+    // Enumeration for the Finite State Machine (FSM)
+    enum RobotState {
+        SCAN_OBELISK,
+        SCAN_GOAL,
+        LAUNCH,
+        TRAVEL,
+        LEAVE,
+        COMPLETE
+    }
+
+    // Hardware for Mecanum Drivetrain
+    // --- Hardware Declarations (Using components expected from the original code) ---
     private DcMotorEx motorLeftFront = null;
     private DcMotorEx motorLeftBack = null;
     private DcMotorEx motorRightFront = null;
     private DcMotorEx motorRightBack = null;
+    private IMU imu = null; // Assuming IMU is used for heading
+    private TouchSensor touchSensor = null;
     private VoltageSensor batterySensor;
-    // CHANGED: Use the Universal IMU interface
-    private IMU imu = null;
+    static final double TICKS_PER_MOTOR_REV = 28.0; // SWYFT v2 drive
+    static final double WHEEL_DIAMETER_INCHES = 3.3856; // 86 mm
+    static final double DRIVE_GEAR_REDUCTION = 12.7;
+    static final double TICKS_PER_INCH =
+            (TICKS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
+    // private static final double TICKS_PER_INCH = 33.4308289114498; // SWYFT Drive v2; goBILDA 5203 series, 12.7:1, 86 mm
 
-    private TouchSensor touchSensor = null; // Touch sensor for state transition
+    static final double DRIVE_SPEED = 0.5;
+    static final double HEADING_GAIN = 0.03; // P-gain for straightness
+    // Variables for Alliance and Position
+    private Alliance alliance = Alliance.RED; // Default to Red Alliance
+    private Position position = Position.POS1; // Default to Position 1
 
-    // --------------------------
-    // --- Vision Components ---
-    private static final boolean USE_WEBCAM = true;
+    // Initializing the FSM state
+    private RobotState currentState = RobotState.LEAVE;
+
+    // --- VISION COMPONENTS ---
     private static final int DESIRED_TAG_ID = -1;     // Set to -1 for ANY tag.
-    private VisionPortal visionPortal;
+    private VisionPortal visionPortal = null; // Initialize to null for safety
     private AprilTagProcessor aprilTag;
     private AprilTagDetection desiredTag = null;
 
-    // --- Configuration Constants ---
-    // Encoder constants for strafeLeft()
-    private static final double TICKS_PER_INCH = 33.4308289114498;
-    private static final double STRAFE_DISTANCE_INCHES = 12.0;
-    private static final double STRAFE_SPEED = 0.3;
+    // A simple class to represent a Waypoint in the autonomous path
+    private class Waypoint {
+        public double x;
+        public double y;
+        public double heading;
 
-    // AprilTag Navigation Constants
-    private static final int TARGET_TAG_ID = 5; // Example target ID
-    private static final double DESIRED_DISTANCE = 24.0; // Distance in inches to stop from the tag
-    private static final double CAMERA_OFFSET_X = 0.0; // Camera X-offset in inches (left/right)
-    private static final double CAMERA_OFFSET_Y = 0.0; // Camera Y-offset in inches (forward/back)
-    private static final double TRAVEL_TIMEOUT_SECONDS = 5.0; // NEW: Timeout for tag navigation
+        public Waypoint(double x, double y, double heading) {
+            this.x = x;
+            this.y = y;
+            this.heading = heading;
+        }
+    }
 
-    // Drive Gains (P-Controller terms)
-    private static final double SPEED_GAIN = 0.02;
-    private static final double STRAFE_GAIN = 0.015;
-    private static final double TURN_GAIN = 0.01;
-    private static final double MAX_AUTO_SPEED = 0.5;
-    private static final double HEADING_THRESHOLD = 0.5; // Acceptable degree error for turn
-    private static final double RANGE_THRESHOLD = 0.5;    // Acceptable inch error for range
+    // Waypoint entities for each starting position.
+    // Replace these placeholder values with your actual coordinates.
+    private final Waypoint redPos1Waypoint = new Waypoint(-36.0, 60.0, 90.0);
+    private final Waypoint redPos2Waypoint = new Waypoint(-12.0, 60.0, 90.0);
+    private final Waypoint redPos3Waypoint = new Waypoint(12.0, 60.0, 90.0);
 
-    private AutoState current_state = AutoState.LEAVE;
-    private ElapsedTime runtime = new ElapsedTime();
-    // Enumerations for Alliance and Position
-    enum Alliance { RED, BLUE }
-    enum Position { POS1, POS2, POS3 }
-    // Variables for Alliance and Position
-    private AutoPreviewEvent2.Alliance alliance = AutoPreviewEvent2.Alliance.RED;
-    private AutoPreviewEvent2.Position position = AutoPreviewEvent2.Position.POS2;
+    private final Waypoint bluePos1Waypoint = new Waypoint(-36.0, -60.0, -90.0);
+    private final Waypoint bluePos2Waypoint = new Waypoint(-12.0, -60.0, -90.0);
+    private final Waypoint bluePos3Waypoint = new Waypoint(12.0, -60.0, -90.0);
 
     @Override
     public void runOpMode() {
-        //datalog = new Datalog(TAG); // Datalog initialization
-        // --- START: NEW DATE/TIMESTAMP LOGIC ---
-        // 1. Define the desired date and time format for the filename.
-        // 'yyyyMMdd_HHmmss' formats to (e.g.) 20251030_171500 (YearMonthDay_HourMinuteSecond)
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-
-        // 2. Get the current system date and time.
-        String timestamp = dateFormat.format(new Date());
-
-        // 3. Define the base filename and append the timestamp.
-        String baseFileName = TAG;
-        String datalogFilename = baseFileName + "_" + timestamp;
-
-        // 4. Instantiate the Datalog object with the unique filename
-        datalog = new Datalog(datalogFilename);
-        // --- END: NEW DATE/TIMESTAMP LOGIC ---
-        // --- A. Hardware Mapping ---
+        // --- Hardware Initialization ---
         // Assuming your IMU is named "imu" in the configuration
         imu = hardwareMap.get(IMU.class, "imu");
 
@@ -248,579 +144,285 @@ public class AutoMeet1 extends LinearOpMode {
         // 3. Initialize the IMU with the parameters
         // This process automatically calibrates and configures the sensor.
         imu.initialize(parameters);
-        // 4. Reset the Yaw (Heading) to 0 degrees at the start of autonomous
-        imu.resetYaw();
-        telemetry.addData("IMU Status", "Initialized with Logo FORWARD, USB UP");
+        // --- D. Mecanum motor initialization
+        motorLeftFront = hardwareMap.get(DcMotorEx.class, "motorLeftFront");
+        motorLeftBack = hardwareMap.get(DcMotorEx.class, "motorLeftBack");
+        motorRightFront = hardwareMap.get(DcMotorEx.class, "motorRightFront");
+        motorRightBack = hardwareMap.get(DcMotorEx.class, "motorRightBack");
+
+        motorLeftFront.setDirection(DcMotorEx.Direction.REVERSE);
+        motorLeftBack.setDirection(DcMotorEx.Direction.REVERSE);
+        motorRightFront.setDirection(DcMotorEx.Direction.FORWARD);
+        motorRightBack.setDirection(DcMotorEx.Direction.FORWARD);
+
+        motorLeftFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        motorLeftBack.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        motorRightFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        motorRightBack.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
+        // --- Driver Hub Pre-Match Selection ---
+
+        telemetry.addData("Status", "Ready for Selection");
         telemetry.update();
+        sleep(3000);
 
-        // 1. Initialize Hardware (Drivetrain and Vision)
-        try {
-            motorLeftFront = hardwareMap.get(DcMotorEx.class, "motorLeftFront");
-            motorLeftBack = hardwareMap.get(DcMotorEx.class, "motorLeftBack");
-            motorRightFront = hardwareMap.get(DcMotorEx.class, "motorRightFront");
-            motorRightBack = hardwareMap.get(DcMotorEx.class, "motorRightBack");
-
-            // Motor Directions
-            motorLeftFront.setDirection(DcMotorEx.Direction.REVERSE);
-            motorLeftBack.setDirection(DcMotorEx.Direction.REVERSE);
-            motorRightFront.setDirection(DcMotorEx.Direction.FORWARD);
-            motorRightBack.setDirection(DcMotorEx.Direction.FORWARD);
-
-            // Set all motors to brake mode
-            motorLeftFront.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            motorLeftBack.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            motorRightFront.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            motorRightBack.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-
-        } catch (Exception e) {
-            telemetry.addData("Error", "Hardware initialization failed. Check config names: " + e.getMessage());
-            telemetry.update();
-            sleep(3000);
-            // Must return/stop if hardware fails
-            return;
-        }
-        batterySensor = hardwareMap.voltageSensor.iterator().next();
-
-
-        // Initialize AprilTag vision
-        initAprilTag();
-
-        // 2. Setup Encoders and Telemetry
-        resetEncoders();
-
-        telemetry.addData("Status", "Ready for selection");
-        telemetry.addData("FSM Start", current_state);
-        telemetry.addData("Target Tag", TARGET_TAG_ID);
-        telemetry.update();
-
-        // --- DATALOGGER INITIALIZATION (NEW) ---
-        try {
-            // 1. Initialize the Datalogger with a filename and column headers
-            datalogger = new Datalogger(
-                    datalogFilename,
-                    "Elapsed_Time_s",
-                    "FSM_State",
-                    "LF_Motor_Power",
-                    "Global_Angle"
-            );
-        } catch (RuntimeException e) {
-            telemetry.addData("ERROR", "Datalogger Init Failed: " + e.getMessage());
-            datalogger = null; // Ensure datalogger is null if setup failed
-        }
-        // --- Alliance and Starting position selection ---
-        // boolean selected = false;
-        while (!isStarted() && !isStopRequested()) { // && !selected) {
+        while (!isStarted() && !isStopRequested()) {
+            // Alliance Selection
             if (gamepad1.b) {
-                alliance = AutoPreviewEvent2.Alliance.BLUE;
+                alliance = Alliance.BLUE;
             } else if (gamepad1.x) {
-                alliance = AutoPreviewEvent2.Alliance.RED;
+                alliance = Alliance.RED;
             }
+
+            // Position Selection
             if (gamepad1.dpad_up) {
-                position = AutoPreviewEvent2.Position.POS1;
+                position = Position.POS1;
             } else if (gamepad1.dpad_right) {
-                position = AutoPreviewEvent2.Position.POS2;
+                position = Position.POS2;
             } else if (gamepad1.dpad_down) {
-                position = AutoPreviewEvent2.Position.POS3;
+                position = Position.POS3;
             }
+
             telemetry.addData("Alliance", "Press B|O for Blue, X|□ for Red");
             telemetry.addData("Position", "Press D-pad Up/Right/Down for POS1/POS2/POS3");
-            // telemetry.addData("CONFIRM", "Press A|\u2715 to LOCK selection");// Use the cross symbol for the confirmation button (A / X)
             telemetry.addData("Current Selection", "Alliance: %s, Position: %s", alliance.toString(), position.toString());
             telemetry.update();
         }
-        // Log the initial state
-        logData("INIT", "WAIT_FOR_START", 0, 0, 0);
 
         waitForStart();
-        runtime.reset();
+        imu.resetYaw(); // safe practice if robot orientation is orthogonal to field, i.e. heading = 0
 
-        // Ensure the logger is closed if the OpMode is stopped abruptly
-        try (Datalogger logOnClose = datalogger) {
-        // --- FSM Processing Loop ---
-            while (opModeIsActive() && current_state != AutoState.AUTO_COMPLETE) {
+        // --- Autonomous Execution ---
 
-                switch (current_state) {
-
-                    case TRAVEL:
-                        // Modular call to drive using AprilTags
-                        // FIX: Splitting this complex telemetry call to avoid the 'Cannot resolve method' error.
-                        telemetry.addData("FSM State", "1. TRAVEL: Driving to AprilTag");
-                        telemetry.addData("Target (ID/Range)", "%d / %.1f in", TARGET_TAG_ID, DESIRED_DISTANCE);
-                        telemetry.update();
-
-                        // This helper function handles the drive and state transition upon success or timeout
-                        driveToAprilTag();
-                        // Transition to the next state
-                        current_state = AutoState.LAUNCH;
-                        break;
-
-                    case LAUNCH:
-                        // Placeholder for activating the launcher
-                        telemetry.addData("FSM State", "2. LAUNCH: Performing artifact launch sequence...");
-                        telemetry.update();
-                        sleep(1000);
-                        /*
-                        launcherLeft.setPower(1.0);
-                        launcherRight.setPower(1.0);
-                        sleep(2000);
-                        launcherLeft.setPower(0.0);
-                        launcherRight.setPower(0.0);
-                         */
-                        // Transition to the next state
-                        current_state = AutoState.LEAVE;
-                        break;
-
-                    case LEAVE:
-                        // Core Action: Execute the strafing movement
-                        telemetry.addData("FSM State", "3. LEAVE: Strafing away from target (%.1f in, Pwr %.2f)", STRAFE_DISTANCE_INCHES, STRAFE_SPEED);
-                        telemetry.update();
-
-                        // The strafeLeft function is synchronous (blocks until finished)
-                        strafeLeft(STRAFE_DISTANCE_INCHES, STRAFE_SPEED);
-
-                        // Transition to the final state
-                        current_state = AutoState.AUTO_COMPLETE;
-                        break;
-
-                    default:
-                        // Safety break for unexpected state
-                        current_state = AutoState.AUTO_COMPLETE;
-                        break;
-                }
-            }
-        } // The 'try-with-resources' block ensures logOnClose.close() is called when the OpMode ends
-
-
-        // --- Final State Handling (AUTO_COMPLETE) ---
         if (opModeIsActive()) {
-            // Stop all drive motors
-            motorLeftFront.setPower(0);
-            motorLeftBack.setPower(0);
-            motorRightFront.setPower(0);
-            motorRightBack.setPower(0);
 
-            telemetry.addData("FSM State", "4. AUTO_COMPLETE: Routine finished.");
-            telemetry.addData("Total Time", "%.2f s", runtime.seconds());
+            telemetry.addData("Status", "Executing Autonomous Routine");
+            telemetry.addData("Routine", "Alliance: %s, Position: %s", alliance.toString(), position.toString());
             telemetry.update();
-            sleep(1000); // Display final telemetry
+
+            // Select the correct waypoint based on user input
+            Waypoint selectedWaypoint;
+            switch (alliance) {
+                case RED:
+                    switch (position) {
+                        case POS1:
+                            selectedWaypoint = redPos1Waypoint;
+                            break;
+                        case POS2:
+                            selectedWaypoint = redPos2Waypoint;
+                            break;
+                        case POS3:
+                            selectedWaypoint = redPos3Waypoint;
+                            break;
+                        default:
+                            selectedWaypoint = redPos1Waypoint; // Fallback
+                            break;
+                    }
+                    break;
+                case BLUE:
+                    switch (position) {
+                        case POS1:
+                            selectedWaypoint = bluePos1Waypoint;
+                            break;
+                        case POS2:
+                            selectedWaypoint = bluePos2Waypoint;
+                            break;
+                        case POS3:
+                            selectedWaypoint = bluePos3Waypoint;
+                            break;
+                        default:
+                            selectedWaypoint = bluePos1Waypoint; // Fallback
+                            break;
+                    }
+                    break;
+                default:
+                    selectedWaypoint = redPos1Waypoint; // Fallback
+                    break;
+            }
+
+            // Call the main autonomous routine with the selected waypoint
+            runAutonomousRoutine(selectedWaypoint);
+            sleep(1000);
+        }
+    }
+
+    // --- Main Autonomous Routine with FSM ---
+    private void runAutonomousRoutine(Waypoint startPoint) {
+
+        telemetry.addData("Executing Path", "Starting from (%.1f, %.1f) with heading %.1f", startPoint.x, startPoint.y, startPoint.heading);
+        telemetry.update();
+
+        // Main FSM loop. The opModeIsActive() check allows the driver to stop the OpMode at any time.
+        while (opModeIsActive() && currentState != RobotState.COMPLETE) {
+
+            telemetry.addData("Current State", currentState.toString());
+            telemetry.update();
+
+            switch (currentState) {
+                case SCAN_OBELISK:
+                    // Placeholder: Code to move to a position to scan the obelisk
+                    // and use computer vision to determine its location.
+                    sleep(2000); // Wait for vision processing
+
+                    // After scanning, transition to the next state
+                    currentState = RobotState.SCAN_GOAL;
+                    break;
+
+                case SCAN_GOAL:
+                    // Placeholder: Code to move to the determined goal position
+                    // and verify its location before launch.
+                    //sleep(1500); // Wait for position verification
+
+                    // After scanning the goal, transition to launch
+                    currentState = RobotState.LAUNCH;
+                    break;
+
+                case LAUNCH:
+                    //launch(1.0); // launch power = 1.0
+
+                    // After the launch action is initiated, wait for it to finish
+                    currentState = RobotState.TRAVEL;
+                    break;
+
+                case TRAVEL:
+                    /*
+                    if(drive(DRIVE_SPEED, -4, DistanceUnit.INCH, 1)){
+                        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        currentState = RobotState.ROTATING;
+                    }
+                     */
+                    currentState = RobotState.COMPLETE;
+                    break;
+
+                case LEAVE:
+                    // speed = 0.5, distance = 12.0, heading = 0.0 -- for test purposes only
+                    driveMecanum(0.5, 12.0, 0.0);
+                    currentState = RobotState.COMPLETE;
+                    break;
+
+                case COMPLETE:
+                    // This state has no action. The `while` loop condition will handle termination.
+                    break;
+                default:
+                    throw new IllegalStateException("FSM: unexpected value: " + currentState);
+            }
+        }
+    }
+
+    /**
+     * Drives the robot straight forward or backward using encoders for distance
+     * and IMU for heading correction.
+     * @param speed Base power (0.0 to 1.0, direction determined by distance)
+     * @param distanceInches Target distance (+ for forward, - for backward)
+     * @param desiredHeading The constant heading (Yaw) to maintain (e.g., 0.0 degrees)
+     */
+    public void driveMecanum(double speed, double distanceInches, double desiredHeading) {
+        if (!opModeIsActive()) return;
+
+        // 1. Calculate Target Ticks
+        int moveCounts = (int) (distanceInches * TICKS_PER_INCH);
+
+        int frontLeftTarget = motorLeftFront.getCurrentPosition() + moveCounts;
+        int frontRightTarget = motorRightFront.getCurrentPosition() + moveCounts;
+        int backLeftTarget = motorLeftBack.getCurrentPosition() + moveCounts;
+        int backRightTarget = motorRightBack.getCurrentPosition() + moveCounts;
+
+        // 2. Set Targets and Run Mode
+        motorLeftFront.setTargetPosition(frontLeftTarget);
+        motorRightFront.setTargetPosition(frontRightTarget);
+        motorLeftBack.setTargetPosition(backLeftTarget);
+        motorRightBack.setTargetPosition(backRightTarget);
+
+        // Use RUN_TO_POSITION
+        motorLeftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorLeftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Start the movement
+        double absSpeed = Math.abs(speed);
+
+        // 3. Loop until all motors reach position (Encoder Logic)
+        while (opModeIsActive() &&
+                (motorLeftFront.isBusy() || motorRightFront.isBusy() ||
+                        motorLeftBack.isBusy() || motorRightBack.isBusy())) {
+
+            // 4. IMU Correction Logic
+            // Get current heading (Yaw)
+            double currentHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+            // Calculate error
+            double error = desiredHeading - currentHeading;
+            while (error > 180)  error -= 360; // Normalize error to +/- 180
+            while (error <= -180) error += 360;
+
+            // Calculate turn correction
+            double turnCorrection = error * HEADING_GAIN;
+
+            // Determine if moving forward or backward to apply correction correctly
+            double direction = Math.signum(distanceInches);
+
+            // Apply correction
+            // When moving forward (direction = +1): TurnCorrection is subtracted from Left and added to Right to correct yaw
+            double leftPower = absSpeed * direction - turnCorrection * direction;
+            double rightPower = absSpeed * direction + turnCorrection * direction;
+
+            // Set Power (using RUN_TO_POSITION ignores power setting except to determine velocity/torque)
+            // Note: For simple movements like this, simply setting the power based on the correction often works fine.
+            motorLeftFront.setPower(leftPower);
+            motorLeftBack.setPower(leftPower);
+            motorRightFront.setPower(rightPower);
+            motorRightBack.setPower(rightPower);
         }
 
-        // Ensure vision resources are closed when OpMode is done
-        if (visionPortal != null) {
-            visionPortal.close();
-        }
-        logData(opModeStatus, "COMPLETE", 0, 0, 0);
-        datalog.close(); // CRITICAL: Close the datalogger to save data
+        // 5. Stop and Reset
+        motorLeftFront.setPower(0);
+        motorRightFront.setPower(0);
+        motorLeftBack.setPower(0);
+        motorRightBack.setPower(0);
 
+        // Switch back to RUN_USING_ENCODER for TeleOp or next movement
+        motorLeftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorRightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLeftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorRightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
      * Initializes the AprilTag processor and Vision Portal.
      */
     private void initAprilTag() {
-        aprilTag = new AprilTagProcessor.Builder()
-                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                .setDrawTagID(true)
-                .setDrawTagOutline(true)
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .build();
+        aprilTag = new AprilTagProcessor.Builder().build();
         aprilTag.setDecimation(2);
 
-        if (USE_WEBCAM) {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                    .addProcessor(aprilTag)
-                    .build();
-        } else {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(BuiltinCameraDirection.BACK)
-                    .addProcessor(aprilTag)
-                    .build();
-        }
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .addProcessor(aprilTag)
+                .build();
+    }
+
+
+    /**
+     * Helper method to start the launching mechanism.
+     * Replace the placeholder code with your actual launcher control logic.
+     */
+    private void launch(double power) {
+        // Example: Set the launcher motor power
+        // launcherMotor.setPower(1.0);
     }
 
     /**
-     * Helper function for the TRAVEL state. Drives the robot to the specified
-     * DESIRED_DISTANCE from the TARGET_TAG_ID using vision-based P-control.
-     * Blocks until the target is reached, OpMode stops, or a timeout occurs.
+     * Helper method to check if the launch is complete.
+     * Replace the placeholder code with your sensor or timer-based logic.
+     * @return true if the launch action is finished, false otherwise.
      */
-    private void driveToAprilTag() {
-
-        boolean targetFound     = false;
-        double  drive           = 0;
-        double  strafe          = 0;
-        double  turn            = 0;
-        ElapsedTime travelTimer = new ElapsedTime();
-        boolean targetReached = false;
-
-        desiredTag  = null;
-
-        // Loop continues until target reached, OpMode ends, or timeout is hit
-        while (opModeIsActive() && !targetReached && travelTimer.seconds() < TRAVEL_TIMEOUT_SECONDS) {
-
-            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-            for (AprilTagDetection detection : currentDetections) {
-                if (detection.metadata != null) {
-                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
-                        targetFound = true;
-                        desiredTag = detection;
-                        break;
-                    }
-                }
-            }
-
-            if (desiredTag != null) {
-                // We see the tag! Proceed with P-control driving.
-                telemetry.addData("\n>","Driving to Target\n");
-                telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
-                telemetry.addData("Camera Range",  "%5.1f inches", desiredTag.ftcPose.range);
-                telemetry.addData("Camera Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
-                telemetry.addData("Camera Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
-
-                // We now get the camera's position relative to the tag, and use our known
-                // camera offsets to find the robot's center relative to the tag.
-                // NOTE: ftcPose.x is the left-right distance, and ftcPose.y is the forward-backward distance.
-                double robotCenterX = desiredTag.ftcPose.x - CAMERA_OFFSET_X;
-                double robotCenterY = desiredTag.ftcPose.y - CAMERA_OFFSET_Y;
-
-                // Calculate the errors we need to correct
-                double rangeError = desiredTag.ftcPose.range - DESIRED_DISTANCE;
-                double bearingError = desiredTag.ftcPose.bearing;
-                double turnError = desiredTag.ftcPose.yaw;
-
-
-                // Use the speed and turn "gains" to calculate the motor powers.
-                drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                strafe = Range.clip(bearingError * STRAFE_GAIN, -HEADING_THRESHOLD, HEADING_THRESHOLD);
-                turn   = Range.clip(turnError * TURN_GAIN, -RANGE_THRESHOLD, RANGE_THRESHOLD);
-                // Use bearing for rotation if yaw is near zero or unset
-                if (Math.abs(turnError) < 0.001) {
-                    turn = Range.clip(bearingError * TURN_GAIN, -RANGE_THRESHOLD, RANGE_THRESHOLD);
-                }
-
-                // --- Calculate Mecanum Motor Powers ---
-                double leftFrontPower = drive + strafe + turn;
-                double rightFrontPower = drive - strafe - turn;
-                double leftBackPower = drive - strafe + turn;
-                double rightBackPower = drive + strafe - turn;
-
-                // Scale powers to prevent exceeding MAX_POWER
-                double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-                max = Math.max(max, Math.abs(leftBackPower));
-                max = Math.max(max, Math.abs(rightBackPower));
-
-                if (max > MAX_AUTO_SPEED) {
-                    leftFrontPower /= max;
-                    rightFrontPower /= max;
-                    leftBackPower /= max;
-                    rightBackPower /= max;
-                }
-
-                // Apply powers
-                motorLeftFront.setPower(leftFrontPower);
-                motorRightFront.setPower(rightFrontPower);
-                motorLeftBack.setPower(leftBackPower);
-                motorRightBack.setPower(rightBackPower);
-
-                // Log data and telemetry
-                logData(opModeStatus, current_state.toString(), drive, strafe, turn);
-
-                // Check for completion
-                if (Math.abs(rangeError) < RANGE_THRESHOLD && Math.abs(bearingError) < HEADING_THRESHOLD) {
-                    telemetry.addData("FSM State", "TARGET_REACHED");
-                    stopAllMotors();
-                    return; // Exit the loop and finish the OpMode
-                }
-                telemetry.addData("Robot","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-                telemetry.addData("Robot Position", "(X: %5.2f, Y: %5.2f)", robotCenterX, robotCenterY);
-
-            } else {
-                // If the target is not found, stop the robot.
-                drive = 0;
-                strafe = 0;
-                turn = 0;
-                logData(opModeStatus, "NOT FOUND", 0, 0, 0);
-                telemetry.addData("Status", "Target Not Found - Stopping");
-            }
-            telemetry.update();
-
-
-            // Apply desired axes motions to the drivetrain.
-            moveRobot(drive, strafe, turn);
-            sleep(10);
-        }
+    private boolean isLaunchComplete() {
+        // Example: Check if a sensor detects the game element has been launched
+        // or if a timer has elapsed.
+        // return (launcherMotor.getPower() == 0);
+        return true; // Placeholder for now
     }
 
-    private void stopAllMotors() {
-        motorLeftFront.setPower(0);
-        motorLeftBack.setPower(0);
-        motorRightFront.setPower(0);
-        motorRightBack.setPower(0);
-    }
-
-    /**
-     * Move robot according to desired axes motions
-     * <p>
-     * Positive X is forward
-     * <p>
-     * Positive Y is strafe left
-     * <p>
-     * Positive Yaw is counter-clockwise
-     */
-    public void moveRobot(double x, double y, double yaw) {
-        // Calculate wheel powers.
-        double powerLeftFront    =  x - y - yaw;
-        double powerRightFront   =  x + y + yaw;
-        double powerLeftBack     =  x + y - yaw;
-        double powerRightBack    =  x - y + yaw;
-
-        // Normalize wheel powers to be less than 1.0
-        double max = Math.max(Math.abs(powerLeftFront), Math.abs(powerRightFront));
-        max = Math.max(max, Math.abs(powerLeftBack));
-        max = Math.max(max, Math.abs(powerRightBack));
-
-        if (max > 1.0) {
-            powerLeftFront /= max;
-            powerRightFront /= max;
-            powerLeftBack /= max;
-            powerRightBack  /= max;
-        }
-
-        // Send powers to the wheels.
-        motorLeftFront.setPower(powerLeftFront);
-        motorRightFront.setPower(powerRightFront);
-        motorLeftBack.setPower(powerLeftBack);
-        motorRightBack.setPower(powerRightBack);
-    }
-
-    /**
-     * Resets the motor encoders to 0 and sets the run mode to RUN_USING_ENCODER.
-     */
-    private void resetEncoders() {
-        // Set to STOP_AND_RESET_ENCODER first
-        motorLeftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        motorLeftBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        motorRightFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        motorRightBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
-        // Then set to RUN_USING_ENCODER for normal operations
-        motorLeftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        motorLeftBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        motorRightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        motorRightBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-    }
-
-    /**
-     * Executes an accurate strafe left movement based on encoder counts at a specified power.
-     * This function blocks until the movement is complete.
-     * @param inches The distance in inches to strafe left.
-     * @param power The motor power to apply (0.0 to 1.0)
-     *              motorLeftFront  ==> -power
-     *              motorLeftBack   ==> +power
-     *              motorRightFront ==> +power
-     *              motorRightBack  ==> -power
-     */
-    private void strafeLeft(double inches, double power) {
-        // Calculate the target position change in encoder ticks
-        int targetTicks = (int) (inches * TICKS_PER_INCH);
-
-        // Get the current position of all four motors
-        int currentLF = motorLeftFront.getCurrentPosition();
-        int currentLB = motorLeftBack.getCurrentPosition();
-        int currentRF = motorRightFront.getCurrentPosition();
-        int currentRB = motorRightBack.getCurrentPosition();
-
-        // Determine target positions for STRAFE LEFT movement
-        int targetPositionLF = currentLF - targetTicks; // Move 'reverse' (backward wheel direction)
-        int targetPositionLB = currentLB + targetTicks; // Move 'forward' (forward wheel direction)
-        int targetPositionRF = currentRF + targetTicks; // Move 'forward' (forward wheel direction)
-        int targetPositionRB = currentRB - targetTicks; // Move 'reverse' (backward wheel direction)
-
-        // Set the new target positions
-        motorLeftFront.setTargetPosition(targetPositionLF);
-        motorLeftBack.setTargetPosition(targetPositionLB);
-        motorRightFront.setTargetPosition(targetPositionRF);
-        motorRightBack.setTargetPosition(targetPositionRB);
-
-        // Switch to RUN_TO_POSITION mode
-        motorLeftFront.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        motorLeftBack.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        motorRightFront.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        motorRightBack.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        // Set power for all motors (using the new 'power' parameter)
-        double absPower = Math.abs(power);
-        motorLeftFront.setPower(absPower);
-        motorLeftBack.setPower(absPower);
-        motorRightFront.setPower(absPower);
-        motorRightBack.setPower(absPower);
-
-        // Wait for all motors to reach their target positions
-        while (opModeIsActive() &&
-                (motorLeftFront.isBusy() || motorLeftBack.isBusy() ||
-                        motorRightFront.isBusy() || motorRightBack.isBusy())) {
-            // Log variables of interest
-            logData("StrafeLeft", current_state.toString(), power, power, power);
-            // Display current motor status
-            telemetry.addData("FSM State", "3. LEAVE: Executing Strafe");
-            telemetry.addData("Target Ticks", "%d", targetTicks);
-            telemetry.addData("LF/RF Pos", "%7d/%7d", motorLeftFront.getCurrentPosition(), motorRightFront.getCurrentPosition());
-            telemetry.addData("LB/RB Pos", "%7d/%7d", motorLeftBack.getCurrentPosition(), motorRightBack.getCurrentPosition());
-            telemetry.addData("Applied Power", "%.2f", absPower);
-            telemetry.update();
-        }
-
-        // Stop all motion by setting power back to 0
-        motorLeftFront.setPower(0);
-        motorLeftBack.setPower(0);
-        motorRightFront.setPower(0);
-        motorRightBack.setPower(0);
-
-        // Change back to RUN_USING_ENCODER
-        motorLeftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        motorLeftBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        motorRightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        motorRightBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-    }
-
-
-    private AprilTagDetection getTargetDetection(int targetTagId) {
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.id == targetTagId) {
-                return detection;
-            }
-        }
-        return null; // Tag not found
-    }
-
-
-    private void logData(String status, String state, double drivePwr, double strafePwr, double turnPwr) {
-        // Get the current OpMode runtime
-        double time = getRuntime(); // <-- MODIFIED: Get runtime here
-
-        // Collect AprilTag Data
-        int aprilTagId = -1;
-        double aprilTagRange = 0.0;
-        double aprilTagBearing = 0.0;
-        double aprilTagElevation = 0.0;
-        double aprilTagYaw = 0.0;
-
-        AprilTagDetection targetDetection = getTargetDetection(APRIL_TAG_ID);
-
-        if (targetDetection != null) {
-            aprilTagId = targetDetection.id;
-            aprilTagRange = targetDetection.ftcPose.range;
-            aprilTagBearing = targetDetection.ftcPose.bearing;
-            aprilTagElevation = targetDetection.ftcPose.elevation;
-            aprilTagYaw = targetDetection.ftcPose.yaw;
-            telemetry.addData("Tag Range/Bearing/Yaw", "%.1f / %.1f / %.1f", aprilTagRange, aprilTagBearing, aprilTagYaw);
-        } else {
-            // If tag is not found, these variables remain 0.0, which is logged to the CSV
-            telemetry.addData("Tag Status", "NOT FOUND");
-        }
-
-        // Log to file - Pass 'time' as the first argument
-        datalog.log(
-                time, // <-- MODIFIED: This is Field 1: Time(s)
-                status,
-                state,
-                (int)APRIL_TAG_ID,
-                aprilTagId,
-                aprilTagRange,
-                aprilTagBearing,
-                aprilTagElevation,
-                aprilTagYaw,
-                motorLeftFront.getCurrentPosition(),
-                motorRightFront.getCurrentPosition(),
-                motorLeftBack.getCurrentPosition(),
-                motorRightBack.getCurrentPosition(),
-                drivePwr,
-                strafePwr,
-                turnPwr,
-                batterySensor.getVoltage()
-        );
-        loopCounter++;
-    }
-
-    // =========================================================================================
-    // DATALOG Class Definition (Assuming Datalogger.java exists in org.firstinspires.ftc.teamcode.Utility)
-    // =========================================================================================
-
-    /**
-     * This class encapsulates all the fields that will go into the datalog.
-     * It uses the simplified Datalogger that requires manual String array formatting.
-     */
-    public static class Datalog implements AutoCloseable {
-        private final Datalogger datalogger;
-
-        // The headers, strictly maintaining the order for the log file
-        private static final String[] HEADERS = new String[]{
-                "Time(s)", // <-- MODIFIED: Added timestamp header
-                "OpModeStatus",
-                "FSMState",
-                "TargetTagID", "DetectedTagID",
-                "Range", "Bearing", "Elevation", "Yaw",
-                "LFPos", "RFPos", "LBPos", "RBPos",
-                "DrivePwr", "StrafePwr", "TurnPwr", "BatteryVoltage"
-        };
-
-        /**
-         * @param name filename for output log
-         */
-        public Datalog(String name)
-        {
-            // The Datalogger constructor handles file creation and header writing.
-            this.datalogger = new Datalogger(name, HEADERS);
-        }
-
-        /**
-         * Logs a single line of data by manually formatting the values.
-         */
-        public void log(
-                double time, // <-- MODIFIED: Added time argument (1st field)
-                String opModeStatus, // 2nd field
-                String fsmState, // 3rd field
-                int targetId, // 4th field
-                int detectedId, // 5th field
-                double range, double bearing, double elevation, double yaw, // 6th - 9th fields
-                int lfPos, int rfPos, int lbPos, int rbPos, // 10th - 13th fields
-                double drivePwr, double strafePwr, double turnPwr, // 14th - 16th fields
-                double voltage) { // 17th field
-
-            String detectedIdStr = (detectedId != -1) ? String.valueOf(detectedId) : "N/A";
-
-            // Manually construct the string array for the Datalogger.log() method, applying formatting here.
-            // **CRITICAL: The order below MUST match the order in the HEADERS array.**
-            datalogger.log(
-                    String.format("%.3f", time), // <-- MODIFIED: Log formatted time
-                    opModeStatus,
-                    fsmState,
-                    String.valueOf(targetId),
-                    detectedIdStr,
-                    (detectedId != -1) ? String.format("%.3f", range) : "N/A",
-                    (detectedId != -1) ? String.format("%.3f", bearing) : "N/A",
-                    (detectedId != -1) ? String.format("%.3f", elevation) : "N/A",
-                    (detectedId != -1) ? String.format("%.3f", yaw) : "N/A",
-                    String.valueOf(lfPos),
-                    String.valueOf(rfPos),
-                    String.valueOf(lbPos),
-                    String.valueOf(rbPos),
-                    String.format("%.3f", drivePwr),
-                    String.format("%.3f", strafePwr),
-                    String.format("%.3f", turnPwr),
-                    String.format("%.2f", voltage)
-            );
-        }
-
-        /**
-         * Closes the datalogger.
-         */
-        @Override
-        public void close() {
-            datalogger.close();
-        }
-    }
 }
+
