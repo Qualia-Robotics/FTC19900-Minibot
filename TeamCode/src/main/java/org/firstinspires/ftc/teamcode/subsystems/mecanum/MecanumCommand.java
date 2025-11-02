@@ -222,12 +222,6 @@ public class MecanumCommand {
         // Use the new unified update method
         pinPointOdoSubsystem.updateOdometry();
     }
-    public void updateOdometry(){
-        odo.update();  // Update sensor once
-        x = (odo.getPosX() / 10);
-        y =  (odo.getPosY() / 10);  // Fix the sign
-        heading = odo.getHeading();
-    }
     public double getX(){
         return pinPointOdoSubsystem.getX();
     }

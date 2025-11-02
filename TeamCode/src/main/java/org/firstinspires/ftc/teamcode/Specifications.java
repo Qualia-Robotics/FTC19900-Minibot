@@ -56,8 +56,6 @@ public class Specifications {
 
     public static final String PIN_POINT_ODOMETRY = "odo";
 
-//    public static final String HANGING_MOTOR = "hangingMotor";
-//    public static final String HANGING_MOTOR_AUX = "hangingMotorAux";
 
 //    public static final String COLOR_SENSOR = "colorSensor";
 
