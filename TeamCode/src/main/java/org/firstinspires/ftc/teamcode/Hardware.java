@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,24 +18,22 @@ public class Hardware {
     private static Hardware instance;
 
 
-    //    // Motors
-
-//    public Limelight3A limelight;
+    // Motors
+//  public Limelight3A limelight;
+    public final DcMotorEx intake;
+    public final Servo sorter;
+    public final Servo pusher;
+    public final CRServo turret;
     public final DcMotorEx lf;
     public final DcMotorEx rf;
     public final DcMotorEx lb;
     public final DcMotorEx rb;
-
 //     Servos
-
-
     public final Servo sorter;
     public final CRServo turret;
     public final DcMotorEx intake;
     public final Servo pusher;
-
     public final DcMotorEx shooter;
-
     //     Odometry
     public final GoBildaPinpointDriver pinPointOdo;
 
@@ -51,11 +50,10 @@ public class Hardware {
 
 
         this.intake = hwMap.get(DcMotorEx.class, Specifications.INTAKE);
+        this.shooter = hwMap.get(DcMotorEx.class, Specifications.SHOOTER);
         this.sorter = hwMap.get(Servo.class, Specifications.SORTER);
         this.turret = hwMap.get(CRServo.class, Specifications.TURRET);
-        this.shooter = hwMap.get(DcMotorEx.class, Specifications.SHOOTER);
-
-
+        this.pusher = hwMap.get(Servo.class, Specifications.PUSHER);
 
 //
         this.pinPointOdo = hwMap.get(GoBildaPinpointDriver.class, Specifications.PIN_POINT_ODOMETRY);
