@@ -1,17 +1,14 @@
-package org.firstinspires.ftc.teamcode.directives;
+package org.firstinspires.ftc.teamcode.directives.defaultdirectives;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.directives.PulseTransferLever;
 import org.firstinspires.ftc.teamcode.stellarstructure.Trigger;
-import org.firstinspires.ftc.teamcode.stellarstructure.conditions.GamepadButton;
+import org.firstinspires.ftc.teamcode.stellarstructure.conditions.GamepadButtonMap;
 import org.firstinspires.ftc.teamcode.stellarstructure.conditions.StatefulCondition;
 import org.firstinspires.ftc.teamcode.stellarstructure.hardwaremapwrappers.StellarServo;
 import org.firstinspires.ftc.teamcode.stellarstructure.runnables.DefaultDirective;
-import org.firstinspires.ftc.teamcode.stellarstructure.runnables.Procedure;
-import org.firstinspires.ftc.teamcode.stellarstructure.runnables.SetPosition;
-import org.firstinspires.ftc.teamcode.stellarstructure.runnables.Sleep;
 import org.firstinspires.ftc.teamcode.subsystems.LeverTransfer;
-import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
 
 public class DefaultLeverTransfer extends DefaultDirective {
 	//todo: implement starting conditions and directives and procedures
@@ -20,7 +17,7 @@ public class DefaultLeverTransfer extends DefaultDirective {
 
 		addTrigger(new Trigger(
 				new StatefulCondition(
-						new GamepadButton(gamepad, GamepadButton.Button.DPAD_UP),
+						new GamepadButtonMap(gamepad, GamepadButtonMap.Button.DPAD_UP),
 						StatefulCondition.Edge.RISING //On initial press
 				),
 				() -> {
@@ -31,7 +28,7 @@ public class DefaultLeverTransfer extends DefaultDirective {
 
 		addTrigger(new Trigger(
 				new StatefulCondition(
-						new GamepadButton(gamepad, GamepadButton.Button.DPAD_DOWN),
+						new GamepadButtonMap(gamepad, GamepadButtonMap.Button.DPAD_DOWN),
 						StatefulCondition.Edge.RISING //On initial press
 				),
 				() -> {
@@ -42,21 +39,12 @@ public class DefaultLeverTransfer extends DefaultDirective {
 
 		addTrigger(new Trigger(
 				new StatefulCondition(
-						new GamepadButton(gamepad, GamepadButton.Button.DPAD_LEFT),
+						new GamepadButtonMap(gamepad, GamepadButtonMap.Button.DPAD_LEFT),
 						StatefulCondition.Edge.RISING //On initial press
 				),
 				() -> {
 					// up down up
-					new Procedure(
-						new SetPosition(leverTransferServo, LeverTransfer.LEVER_DOWN_POSITION, 0.01),
-						new Sleep(0.03),
-						new SetPosition(leverTransferServo, LeverTransfer.LEVER_UP_POSITION, 0.01),
-						new Sleep(0.03),
-						new SetPosition(leverTransferServo, LeverTransfer.LEVER_DOWN_POSITION, 0.01)
-					).setStartingConditions(
-							// spindexer outtake position
-							() -> Spindexer.getInstance().getIsOuttakePosition()
-					).schedule();
+					new PulseTransferLever().schedule();
 				}
 		));
 	}

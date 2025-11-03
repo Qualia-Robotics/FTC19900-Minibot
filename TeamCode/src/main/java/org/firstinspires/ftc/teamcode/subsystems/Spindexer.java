@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.directives.DefaultSpindexer;
+import org.firstinspires.ftc.teamcode.directives.defaultdirectives.DefaultSpindexer;
 import org.firstinspires.ftc.teamcode.stellarstructure.Subsystem;
 
 import org.firstinspires.ftc.teamcode.stellarstructure.hardwaremapwrappers.StellarServo;
@@ -22,11 +22,28 @@ public final class Spindexer extends Subsystem {
 	private Spindexer() {}
 
 	private final static double DEGREES_TO_SERVO = 1.0 / 320.0;
-	private int selectedSegment = 0;
 	private boolean isIntakePosition = true;
-	private final static double SPINDEXER_OFFSET = 20.0;
-	private final static double[] INTAKE_DEGREE_POSITIONS = {0.0, 240.0, 120.0};
-	private final static double[] TRANSFER_DEGREE_POSITIONS = {180.0, 60.0, 300.0};
+	private final static double SPINDEXER_OFFSET = 0.0;
+	private final static double[] INTAKE_DEGREE_POSITIONS = {0.0 + SPINDEXER_OFFSET, 240.0 + SPINDEXER_OFFSET, 120.0 + SPINDEXER_OFFSET};
+	private final static double[] TRANSFER_DEGREE_POSITIONS = {180.0 + SPINDEXER_OFFSET, 60.0 + SPINDEXER_OFFSET, 300.0 + SPINDEXER_OFFSET};
+
+	public enum Position {
+		INTAKE, TRANSFER
+	}
+
+	/*
+
+	+-----------+--------+----------+
+	|           | Intake | Transfer |
+	| Segment 1 |   0    |   180    |
+	| Segment 2 |  120   |   300    |
+	| Segment 3 |  240   |   60     |
+	+-----------+--------+----------+
+
+	Intake Procedure (60 ->) 0 -> 120 -> 240
+	Transfer Procedure 240 -> 300 -> 180 -> 60
+
+	 */
 
 	private StellarServo spindexerServo;
 	private DigitalChannel beamBreak;
@@ -49,40 +66,39 @@ public final class Spindexer extends Subsystem {
 	@Override
 	public void update() {}
 
-	public void setSelectedSegment(int selectedSegment) {
-		this.selectedSegment = selectedSegment;
+	public StellarServo getSpindexerServo() {
+		return spindexerServo;
 	}
 
-	public void toggleIsIntakePosition() {
-		isIntakePosition = !isIntakePosition;
+	public DigitalChannel getBeamBreak() {
+		return beamBreak;
 	}
 
-	public void updateServoPosition() {
-		spindexerServo.setPosition(
-				((isIntakePosition ?
-						INTAKE_DEGREE_POSITIONS[selectedSegment] :
-						TRANSFER_DEGREE_POSITIONS[selectedSegment]
-				) + SPINDEXER_OFFSET) * DEGREES_TO_SERVO
-		);
+	public ColorSensor getColorSensor() {
+		return colorSensor;
 	}
 
-	public boolean getIsOuttakePosition() {
+	public double getDegreesForSegmentPosition(int segment, Position position) {
+		if (position == Position.INTAKE) {
+			return INTAKE_DEGREE_POSITIONS[segment] * DEGREES_TO_SERVO;
+		} else if (position == Position.TRANSFER) {
+			return TRANSFER_DEGREE_POSITIONS[segment] * DEGREES_TO_SERVO;
+		} else {
+			return 0.0;
+		}
+	}
+
+	public boolean getIsTransferPosition() {
 		return !isIntakePosition;
-	}
-
-	public int getSelectedSegment() {
-		return selectedSegment;
 	}
 
 	@NonNull
 	@Override
 	public String toString() {
 		return String.format(
-				"selectedSegment: %d\n" +
-				"isIntakePosition: %b\n" +
 				"beamBreak: %b\n" +
 				"colorSensorRGB: %d, %d, %d",
-				selectedSegment, isIntakePosition, beamBreak.getState(),
+				beamBreak.getState(),
 				colorSensor.red(), colorSensor.green(), colorSensor.blue()
 		);
 	}

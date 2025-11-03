@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import org.firstinspires.ftc.teamcode.directives.DefaultDrivebase;
+import org.firstinspires.ftc.teamcode.directives.defaultdirectives.DefaultDrivebase;
 
 import org.firstinspires.ftc.teamcode.stellarstructure.Subsystem;
 

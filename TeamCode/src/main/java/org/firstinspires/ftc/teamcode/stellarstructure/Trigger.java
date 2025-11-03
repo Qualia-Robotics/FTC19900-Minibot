@@ -12,11 +12,11 @@ public class Trigger {
 		this.action = action;
 	}
 
-	public boolean check() {
+	public final boolean check() {
 		return condition.evaluate();
 	}
 
-	public void run() {
+	public final void run() {
 		action.run();
 	}
 }

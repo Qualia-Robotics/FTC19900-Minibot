@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.directives.DefaultIntake;
+import org.firstinspires.ftc.teamcode.directives.defaultdirectives.DefaultIntake;
 import org.firstinspires.ftc.teamcode.stellarstructure.hardwaremapwrappers.StellarDcMotor;
 
 import com.qualcomm.robotcore.hardware.Gamepad;

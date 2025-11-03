@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.directives;
+package org.firstinspires.ftc.teamcode.directives.defaultdirectives;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 

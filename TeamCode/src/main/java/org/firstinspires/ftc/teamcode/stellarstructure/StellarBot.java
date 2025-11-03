@@ -17,21 +17,21 @@ public class StellarBot {
 		}
 	}
 
-	public void init(HardwareMap hardwareMap) {
+	public final void init(HardwareMap hardwareMap) {
 		//initialize all subsystems
 		for (Subsystem subsystem : subsystems) {
 			subsystem.init(hardwareMap);
 		}
 	}
 
-	public void setGamepads(Gamepad gamepad1, Gamepad gamepad2) {
+	public final void setGamepads(Gamepad gamepad1, Gamepad gamepad2) {
 		//set gamepads for all subsystems
 		for (Subsystem subsystem : subsystems) {
 			subsystem.setGamepads(gamepad1, gamepad2);
 		}
 	}
 
-	public void update() {
+	public final void update() {
 		//update triggers and directives
 		Scheduler.getInstance().run();
 
@@ -43,7 +43,7 @@ public class StellarBot {
 
 	@NonNull
 	@Override
-	public String toString() {
+	public final String toString() {
 		StringBuilder telemetry = new StringBuilder();
 
 		for (Subsystem subsystem: subsystems) {
@@ -55,7 +55,7 @@ public class StellarBot {
 		return telemetry.toString();
 	}
 
-	public void cancelAll() {
+	public final void cancelAll() {
 		Scheduler.getInstance().cancelAll();
 	}
 }

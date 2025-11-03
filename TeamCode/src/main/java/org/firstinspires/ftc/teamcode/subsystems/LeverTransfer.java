@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.directives.DefaultLeverTransfer;
+import org.firstinspires.ftc.teamcode.directives.defaultdirectives.DefaultLeverTransfer;
 import org.firstinspires.ftc.teamcode.stellarstructure.hardwaremapwrappers.StellarServo;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -44,10 +44,6 @@ public final class LeverTransfer extends Subsystem {
 		isLeverTargetUp = isUpPosition;
 	}
 
-	public void toggleLeverPosition() {
-		isLeverTargetUp = !isLeverTargetUp;
-	}
-
 	public void updateServoPosition() {
 		//todo: fix directive spam
 		new SetPosition(
@@ -55,17 +51,12 @@ public final class LeverTransfer extends Subsystem {
 				isLeverTargetUp ? LEVER_UP_POSITION : LEVER_DOWN_POSITION,
 				0.01
 		).setStartingConditions(
-				() -> Spindexer.getInstance().getIsOuttakePosition()
+				() -> Spindexer.getInstance().getIsTransferPosition()
 		).schedule();
-	}
-
-	public boolean getIsLeverUp() {
-		return !isLeverTargetUp;
 	}
 
 	public StellarServo getLeverTransferServo() {
 		return this.leverTransferServo;
-
 	}
 
 	@NonNull

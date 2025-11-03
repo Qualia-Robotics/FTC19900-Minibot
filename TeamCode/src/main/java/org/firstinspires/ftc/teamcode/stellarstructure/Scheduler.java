@@ -38,11 +38,11 @@ public class Scheduler {
 		subsystems.remove(subsystem);
 	}
 
-	public void addTrigger(@NonNull Trigger trigger) {
+	public final void addTrigger(@NonNull Trigger trigger) {
 		this.activeTriggers.add(trigger);
 	}
 
-	public void removeTrigger(@NonNull Trigger trigger) {
+	public final void removeTrigger(@NonNull Trigger trigger) {
 		this.activeTriggers.remove(trigger);
 	}
 
@@ -112,7 +112,7 @@ public class Scheduler {
 		return true;
 	}
 
-	public void schedule(@NonNull Runnable runnableToSchedule) {
+	public final void schedule(@NonNull Runnable runnableToSchedule) {
 		// prevent scheduling of the same directive multiple times
 		if (
 				this.pendingRunnables.contains(runnableToSchedule) ||
@@ -135,7 +135,7 @@ public class Scheduler {
 		}
 	}
 
-	public void checkScheduleQueue() {
+	public final void checkScheduleQueue() {
 		for (Iterator<Runnable> iterator = this.pendingRunnables.iterator(); iterator.hasNext(); ) {
 			Runnable runnable = iterator.next();
 			if (checkStartingConditions(runnable)) {
@@ -146,7 +146,7 @@ public class Scheduler {
 		}
 	}
 
-	public void run() {
+	public final void run() {
 		// check scheduled runnables and start them if possible
 		checkScheduleQueue();
 

@@ -11,11 +11,11 @@ public abstract class Subsystem {
 	public abstract void setGamepads(Gamepad gamepad1, Gamepad gamepad2);
 	public abstract void update();
 
-	public void setDefaultDirective(DefaultDirective defaultDirective) {
+	public final void setDefaultDirective(DefaultDirective defaultDirective) {
 		this.defaultDirective = defaultDirective;
 	}
 
-	public DefaultDirective getDefaultDirective() {
+	public final DefaultDirective getDefaultDirective() {
 		return defaultDirective;
 	}
 }

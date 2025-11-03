@@ -42,6 +42,6 @@ public class SetPosition extends Directive {
 
 	@Override
 	public boolean isFinished() {
-		return Math.abs(servo.getPosition() - targetPosition) <= 0.01;
+		return Math.abs(servo.getPosition() - targetPosition) <= acceptableRange;
 	}
 }

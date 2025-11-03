@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.stellarstructure.conditions;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-public class GamepadButton implements Condition {
+public class GamepadButtonMap implements Condition {
 	public enum Button {
 		A, B, X, Y,
 		LEFT_BUMPER, RIGHT_BUMPER,
@@ -12,7 +12,7 @@ public class GamepadButton implements Condition {
 	private final Gamepad gamepad;
 	private final Button button;
 
-	public GamepadButton(Gamepad gamepad, Button button) {
+	public GamepadButtonMap(Gamepad gamepad, Button button) {
 		this.gamepad = gamepad;
 		this.button = button;
 	}
