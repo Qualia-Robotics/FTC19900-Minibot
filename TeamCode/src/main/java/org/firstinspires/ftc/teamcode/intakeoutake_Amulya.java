@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 //import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad2;
+//import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+//import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+//import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad2;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,15 +18,15 @@ public class intakeoutake_Amulya extends com.qualcomm.robotcore.eventloop.opmode
     private DcMotor intake;
     //private Servo claw;
 
-    private boolean clawOpen = true;
-    private boolean lastBump = false;
+    //private boolean clawOpen = true;
+    //private boolean lastBump = false;
 
     public void init(HardwareMap hardwareMap) {
         intake = hardwareMap.get(DcMotor.class, "intake");
         //claw = hardwareMap.get(DcMotor.class, "claw");
         intake.setDirection(DcMotor.Direction.REVERSE);
         /* clawOpen = false; */
-        lastBump = false;
+        //lastBump = false;
     }
 
   /*  public void GAMEPAD_INPUT_TOGGLE(Gamepad gamepad2, Telemetry telemetry) {
