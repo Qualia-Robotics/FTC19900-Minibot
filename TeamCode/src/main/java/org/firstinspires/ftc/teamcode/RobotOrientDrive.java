@@ -49,7 +49,7 @@ public class RobotOrientDrive extends OpMode {
             telemetry.update();
         }
         else {
-            bar.release(0.7, 1.0);
+            bar.release(0.65, 1.0);
             telemetry.addData("after release", bar.getBarPosition());
             telemetry.update();
         }
@@ -65,34 +65,34 @@ public class RobotOrientDrive extends OpMode {
         // shoot
         double launchSpeed;
 
-        if(gamepad1.aWasPressed()) {
-            launch.launchBall(0.25);
-            launchSpeed = launch.getLaunchSpeed();
-            telemetry.addData("Launch Speed: ", launchSpeed);
+        if(gamepad1.a) {
+            launch.launchBall(0.7);
+            launchSpeed = launch.getlaunchRPM();
+            telemetry.addData("Launch RPM: ", launchSpeed);
         }
         else {
             launch.launchBall(0);
         }
-        if(gamepad1.bWasPressed()) {
-            launch.launchBall(0.5);
-            launchSpeed = launch.getLaunchSpeed();
-            telemetry.addData("Launch Speed: ", launchSpeed);
+        if(gamepad1.b) {
+            launch.launchBall(0.8);
+            launchSpeed = launch.getlaunchRPM();
+            telemetry.addData("Launch RPM: ", launchSpeed);
         }
         else {
             launch.launchBall(0);
         }
-        if(gamepad1.xWasPressed()) {
-            launch.launchBall(0.75);
-            launchSpeed = launch.getLaunchSpeed();
-            telemetry.addData("Launch Speed: ", launchSpeed);
-        }
-        else {
-            launch.launchBall(0);
-        }
-        if(gamepad1.yWasPressed()) {
+        if(gamepad1.x) {
             launch.launchBall(0.9);
-            launchSpeed = launch.getLaunchSpeed();
-            telemetry.addData("Launch Speed: ", launchSpeed);
+            launchSpeed = launch.getlaunchRPM();
+            telemetry.addData("Launch RPM: ", launchSpeed);
+        }
+        else {
+            launch.launchBall(0);
+        }
+        if(gamepad1.y) {
+            launch.launchBall(1);
+            launchSpeed = launch.getlaunchRPM();
+            telemetry.addData("Launch RPM: ", launchSpeed);
         }
         else {
             launch.launchBall(0);
