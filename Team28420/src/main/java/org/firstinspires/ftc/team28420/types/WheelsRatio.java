@@ -4,65 +4,65 @@ import java.lang.Number;
 
 public class WheelsRatio<T extends Number> {
 
-    private T leftFront, rightFront, leftBack, rightBack;
+    private T leftTop, rightTop, leftBottom, rightBottom;
 
-    public T getLeftFront() {
-        return leftFront;
+    public void setLeftTop(T leftTop) {
+        this.leftTop = leftTop;
     }
 
-    public void setLeftFront(T leftFront) {
-        this.leftFront = leftFront;
+    public void setRightTop(T rightTop) {
+        this.rightTop = rightTop;
     }
 
-    public T getRightFront() {
-        return rightFront;
+    public void setLeftBottom(T leftBottom) {
+        this.leftBottom = leftBottom;
     }
 
-    public void setRightFront(T rightFront) {
-        this.rightFront = rightFront;
+    public void setRightBottom(T rightBottom) {
+        this.rightBottom = rightBottom;
     }
 
-    public T getLeftBack() {
-        return leftBack;
+    public T getLeftTop() {
+        return leftTop;
     }
 
-    public void setLeftBack(T leftBack) {
-        this.leftBack = leftBack;
+    public T getRightTop() {
+        return rightTop;
     }
 
-    public T getRightBack() {
-        return rightBack;
+    public T getLeftBottom() {
+        return leftBottom;
     }
 
-    public void setRightBack(T rightBack) {
-        this.rightBack = rightBack;
+    public T getRightBottom() {
+        return rightBottom;
     }
 
-    public WheelsRatio(T leftFront, T rightFront, T leftBack, T rightBack) {
-        this.leftFront = leftFront;
-        this.rightFront = rightFront;
-        this.leftBack = leftBack;
-        this.rightBack = rightBack;
+    public WheelsRatio(T leftTop, T rightTop, T leftBottom, T rightBack) {
+        this.leftTop = leftTop;
+        this.rightTop = rightTop;
+        this.leftBottom = leftBottom;
+        this.rightBottom = rightBack;
     }
 
-    public static final WheelsRatio<Double> ZERO = new WheelsRatio(0, 0, 0, 0);
+    public static final WheelsRatio<Double> ZERO = new WheelsRatio<Double>(0.0, 0.0, 0.0, 0.0);
 
     public WheelsRatio<Integer> toInt(double k) {
         return new WheelsRatio<>(
-                (int) ((double) leftFront * k),
-                (int) ((double) rightFront * k),
-                (int) ((double) leftBack * k),
-                (int) ((double) rightBack * k)
+                (int) ((double) leftTop * k),
+                (int) ((double) rightTop * k),
+                (int) ((double) leftBottom * k),
+                (int) ((double) rightBottom * k)
         );
     }
 
     @Override
     public String toString() {
         return "WheelsRatio{" +
-                "leftFront=" + leftFront +
-                ", rightFront=" + rightFront +
-                ", leftBack=" + leftBack +
-                ", rightBack=" + rightBack +
+                "leftFront=" + leftTop +
+                ", rightFront=" + rightTop +
+                ", leftBack=" + leftBottom +
+                ", rightBack=" + rightBottom +
                 '}';
     }
 }

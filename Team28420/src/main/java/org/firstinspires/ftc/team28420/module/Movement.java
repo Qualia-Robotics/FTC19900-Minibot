@@ -20,30 +20,30 @@ public class Movement {
 
     public void setMotorsTargetPosition(WheelsRatio<Double> wheelsRatio) {
         WheelsRatio<Integer> wheelsRatioInteger = wheelsRatio.toInt(1);
-        leftFront.setTargetPosition(wheelsRatioInteger.getLeftFront());
-        rightFront.setTargetPosition(wheelsRatioInteger.getRightFront());
-        leftBack.setTargetPosition(wheelsRatioInteger.getLeftBack());
-        rightBack.setTargetPosition(wheelsRatioInteger.getRightBack());
+        leftFront.setTargetPosition(wheelsRatioInteger.getLeftTop());
+        rightFront.setTargetPosition(wheelsRatioInteger.getRightTop());
+        leftBack.setTargetPosition(wheelsRatioInteger.getLeftBottom());
+        rightBack.setTargetPosition(wheelsRatioInteger.getRightBottom());
     }
 
     public void setMotorsPowerRatios(WheelsRatio<Double> wheelsRatio) {
-        Config.Etc.telemetry.addData("left front", wheelsRatio.getLeftFront());
-        Config.Etc.telemetry.addData("right front", wheelsRatio.getRightFront());
-        Config.Etc.telemetry.addData("left bottom", wheelsRatio.getLeftBack());
-        Config.Etc.telemetry.addData("right bottom", wheelsRatio.getRightBack());
+        Config.Etc.telemetry.addData("left front", wheelsRatio.getLeftTop());
+        Config.Etc.telemetry.addData("right front", wheelsRatio.getRightTop());
+        Config.Etc.telemetry.addData("left bottom", wheelsRatio.getLeftBottom());
+        Config.Etc.telemetry.addData("right bottom", wheelsRatio.getRightBottom());
 
 
-        leftFront.setVelocity(wheelsRatio.getLeftFront());
-        rightFront.setVelocity(wheelsRatio.getRightFront());
-        leftBack.setVelocity(wheelsRatio.getLeftBack());
-        rightBack.setVelocity(wheelsRatio.getRightBack());
+        leftFront.setVelocity(wheelsRatio.getLeftTop());
+        rightFront.setVelocity(wheelsRatio.getRightTop());
+        leftBack.setVelocity(wheelsRatio.getLeftBottom());
+        rightBack.setVelocity(wheelsRatio.getRightBottom());
     }
 
     public void setMotorsVelocityRatios(WheelsRatio<Double> wheelsRatio, int velocityMult) {
-        leftFront.setVelocity(wheelsRatio.getLeftBack() * velocityMult);
-        rightFront.setVelocity(wheelsRatio.getRightFront() * velocityMult);
-        leftBack.setVelocity(wheelsRatio.getLeftBack() * velocityMult);
-        rightBack.setVelocity(wheelsRatio.getRightBack() * velocityMult);
+        leftFront.setVelocity(wheelsRatio.getLeftBottom() * velocityMult);
+        rightFront.setVelocity(wheelsRatio.getRightTop() * velocityMult);
+        leftBack.setVelocity(wheelsRatio.getLeftBottom() * velocityMult);
+        rightBack.setVelocity(wheelsRatio.getRightBottom() * velocityMult);
     }
 
 

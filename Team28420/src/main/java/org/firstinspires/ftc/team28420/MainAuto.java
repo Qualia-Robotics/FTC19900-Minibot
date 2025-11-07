@@ -34,10 +34,10 @@ public class MainAuto extends LinearOpMode {
     private void initialize() {
         Config.Etc.telemetry = telemetry;
 
-        mov = new Movement(hardwareMap.get(DcMotorEx.class, Config.LEFT_TOP_MOTOR),
-                hardwareMap.get(DcMotorEx.class, Config.RIGHT_TOP_MOTOR),
-                hardwareMap.get(DcMotorEx.class, Config.LEFT_BOTTOM_MOTOR),
-                hardwareMap.get(DcMotorEx.class, Config.RIGHT_BOTTOM_MOTOR));
+        mov = new Movement(hardwareMap.get(DcMotorEx.class, Config.WheelBaseConf.LEFT_TOP_MOTOR),
+                hardwareMap.get(DcMotorEx.class, Config.WheelBaseConf.RIGHT_TOP_MOTOR),
+                hardwareMap.get(DcMotorEx.class, Config.WheelBaseConf.LEFT_BOTTOM_MOTOR),
+                hardwareMap.get(DcMotorEx.class, Config.WheelBaseConf.RIGHT_BOTTOM_MOTOR));
     }
 
     private void setup() {
