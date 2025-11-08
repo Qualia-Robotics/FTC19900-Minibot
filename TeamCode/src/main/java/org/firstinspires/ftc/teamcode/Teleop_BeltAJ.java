@@ -38,7 +38,7 @@ public class Teleop_BeltAJ extends LinearOpMode {
         outtakeright = hardwareMap.get(DcMotor.class, "outtakeright");
 
         // --- Map servo in configuration ---
-        belt = hardwareMap.get(Servo.class, "conveyorServo");
+        belt = hardwareMap.get(Servo.class, "belt");
 
         // Servo neutral (stop for continuous rotation servo)
         belt.setPosition(0.5);
