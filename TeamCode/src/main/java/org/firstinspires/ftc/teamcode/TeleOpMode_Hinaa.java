@@ -69,7 +69,6 @@ public class TeleOpMode_Hinaa extends LinearOpMode {
     private long servoStartTime = 0;
 
 
-
     @Override
     public void runOpMode() {
 
@@ -89,8 +88,6 @@ public class TeleOpMode_Hinaa extends LinearOpMode {
         outtakeleft.setDirection(DcMotor.Direction.FORWARD);
         outtakeright.setDirection(DcMotor.Direction.REVERSE);
         belt.setPosition(0.5);
-
-
 
 
         // ########################################################################################
@@ -126,16 +123,16 @@ public class TeleOpMode_Hinaa extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral = gamepad1.left_stick_x;
+            double yaw = gamepad1.right_stick_x;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double frontleftPower  = axial + lateral + yaw;
+            double frontleftPower = axial + lateral + yaw;
             double frontrightPower = axial - lateral - yaw;
-            double backleftPower   = axial - lateral + yaw;
-            double backrightPower  = axial + lateral - yaw;
+            double backleftPower = axial - lateral + yaw;
+            double backrightPower = axial + lateral - yaw;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -144,10 +141,10 @@ public class TeleOpMode_Hinaa extends LinearOpMode {
             max = Math.max(max, Math.abs(backrightPower));
 
             if (max > 1.0) {
-                frontleftPower  /= max;
+                frontleftPower /= max;
                 frontrightPower /= max;
-                backleftPower   /= max;
-                backrightPower  /= max;
+                backleftPower /= max;
+                backrightPower /= max;
             }
 
             // This is test code:
@@ -230,4 +227,7 @@ public class TeleOpMode_Hinaa extends LinearOpMode {
             telemetry.update();
             telemetry.update();
         }
-    }}
+
+    }
+
+}
