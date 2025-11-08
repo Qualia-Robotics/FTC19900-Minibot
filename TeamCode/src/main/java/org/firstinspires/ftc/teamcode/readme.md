@@ -124,7 +124,7 @@ Note: Some names start with "Team" and others start with "team".  This is intent
 4)  In the new Team0417/src/main folder, edit the "AndroidManifest.xml" file, change the line that contains
          package="org.firstinspires.ftc.teamcode"
     to be
-         package="org.firstinspires.ftc.team0417"
+         package="org.firstinspires.ftc.team0417" 
 
 5)  Add:    include ':Team0417' to the "/settings.gradle" file.
     

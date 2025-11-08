@@ -35,7 +35,9 @@ public class OldRevTeleOp extends OpMode {
         leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         telemetry.addData("Status", "Initialized. Ready for Mecanum drive.");
+
     }
+
 
     @Override
     public void init_loop() {
@@ -57,6 +59,8 @@ public class OldRevTeleOp extends OpMode {
     }
 
     public void MecanumMovement() {
+        boolean Status = true;
+
         // 1. Get the control inputs from the gamepad.
         // We invert the Y axis so that pushing UP is positive forward power.
         double drive = -gamepad1.left_stick_y;  // Forward/Backward (Axial)
@@ -95,6 +99,7 @@ public class OldRevTeleOp extends OpMode {
         rightRear.setPower(rightRearPower);
 
         // Optional: Add telemetry to help with debugging
+        telemetry.addData("Is on: " , Status);
         telemetry.addData("LF Power", "%.2f", leftFrontPower);
         telemetry.addData("RF Power", "%.2f", rightFrontPower);
         telemetry.addData("LR Power", "%.2f", leftRearPower);
