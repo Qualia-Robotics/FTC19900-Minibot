@@ -19,9 +19,16 @@ public class Auto_Amulya extends LinearOpMode {
     static final double COUNTS_PER_MOTOR_REV = 383.6; // goBILDA 20:1
     static final double DRIVE_GEAR_REDUCTION = 1.0;
     static final double WHEEL_DIAMETER_INCHES = 4.0;
-    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * Math.PI);
+    static final double COUNTS_PER_INCH =
+            (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
+
+    // Robot-specific values (tune for your chassis!)
+    static final double ROBOT_TRACK_WIDTH_INCHES = 13.0; // Distance between left/right wheels
+    static final double COUNTS_PER_DEGREE =
+            ((Math.PI * ROBOT_TRACK_WIDTH_INCHES) / 360.0) * COUNTS_PER_INCH;
+
     static final double DRIVE_SPEED = 0.6;
+    static final double TURN_SPEED = 0.5;
 
     @Override
     public void runOpMode() {
@@ -44,7 +51,7 @@ public class Auto_Amulya extends LinearOpMode {
         outtakeleft = hardwareMap.get(DcMotor.class, "outtakeleft");
         outtakeright = hardwareMap.get(DcMotor.class, "outtakeright");
 
-        intake.setDirection(DcMotor.Direction.FORWARD); // change if motor spins wrong way
+        intake.setDirection(DcMotor.Direction.FORWARD);
         outtakeleft.setDirection(DcMotor.Direction.FORWARD);
         outtakeright.setDirection(DcMotor.Direction.REVERSE);
 
@@ -59,12 +66,35 @@ public class Auto_Amulya extends LinearOpMode {
 
         if (opModeIsActive()) {
 
-            // ---- Drive Sequence ----
-            moveForward(20, DRIVE_SPEED);
+            // ---- Drive Sequence Example ----
+            moveForward(45, DRIVE_SPEED);
             sleep(500);
 
+            // ---- New: Turning Precisely ----
+            turnRight(45, TURN_SPEED); // turn 90° right
+            sleep(500);
 
-            moveBackward(20, DRIVE_SPEED);
+            strafeRight(25, DRIVE_SPEED);
+            sleep(500);
+
+            moveForward(3, DRIVE_SPEED);
+            sleep(500);
+
+            runIntake(4000); // run for 4 seconds
+
+            moveBackward(3, DRIVE_SPEED);
+            sleep(500);
+
+            strafeRight(3, DRIVE_SPEED);
+            sleep(500);
+
+            moveForward(3, DRIVE_SPEED);
+            sleep(500);
+
+            runIntake(4000); // run for 4 seconds
+
+            /*
+            turnLeft(90, TURN_SPEED); // turn 90° left
             sleep(500);
 
             strafeRight(20, DRIVE_SPEED);
@@ -73,23 +103,65 @@ public class Auto_Amulya extends LinearOpMode {
             strafeLeft(20, DRIVE_SPEED);
             sleep(500);
 
+            moveBackward(20, DRIVE_SPEED);
+            sleep(500);
             // ---- Outtake Sequence ----
             runOuttake(2000); // run for 2 seconds
 
             // ---- Intake Sequence ----
             runIntake(2000); // run for 2 seconds
-
+            */
             telemetry.addLine("Auto Complete");
             telemetry.update();
         }
     }
 
+    // === Encoder & Motion Helpers ===
 
     private void resetAndRunEncoders(DcMotor... motors) {
         for (DcMotor motor : motors) {
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+    }
+
+    private void setTargetPositionAll(int move) {
+        frontleft.setTargetPosition(frontleft.getCurrentPosition() + move);
+        frontright.setTargetPosition(frontright.getCurrentPosition() + move);
+        backleft.setTargetPosition(backleft.getCurrentPosition() + move);
+        backright.setTargetPosition(backright.getCurrentPosition() + move);
+    }
+
+    private void runToPosition(double speed) {
+        frontleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        frontleft.setPower(speed);
+        frontright.setPower(speed);
+        backleft.setPower(speed);
+        backright.setPower(speed);
+
+        while (opModeIsActive() &&
+                (frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy())) {
+            telemetry.addData("FL", frontleft.getCurrentPosition());
+            telemetry.addData("FR", frontright.getCurrentPosition());
+            telemetry.addData("BL", backleft.getCurrentPosition());
+            telemetry.addData("BR", backright.getCurrentPosition());
+            telemetry.update();
+        }
+
+        stopAllDriveMotors();
+        resetAndRunEncoders(frontleft, frontright, backleft, backright);
+        sleep(250);
+    }
+
+    private void stopAllDriveMotors() {
+        frontleft.setPower(0);
+        frontright.setPower(0);
+        backleft.setPower(0);
+        backright.setPower(0);
     }
 
     private void moveForward(double inches, double speed) {
@@ -122,51 +194,29 @@ public class Auto_Amulya extends LinearOpMode {
         runToPosition(speed);
     }
 
-    private void setTargetPositionAll(int move) {
+    // === NEW DEGREE-BASED TURNING ===
+    private void turnRight(double degrees, double speed) {
+        int move = (int) (degrees * COUNTS_PER_DEGREE);
         frontleft.setTargetPosition(frontleft.getCurrentPosition() + move);
-        frontright.setTargetPosition(frontright.getCurrentPosition() + move);
         backleft.setTargetPosition(backleft.getCurrentPosition() + move);
+        frontright.setTargetPosition(frontright.getCurrentPosition() - move);
+        backright.setTargetPosition(backright.getCurrentPosition() - move);
+        runToPosition(speed);
+    }
+
+    private void turnLeft(double degrees, double speed) {
+        int move = (int) (degrees * COUNTS_PER_DEGREE);
+        frontleft.setTargetPosition(frontleft.getCurrentPosition() - move);
+        backleft.setTargetPosition(backleft.getCurrentPosition() - move);
+        frontright.setTargetPosition(frontright.getCurrentPosition() + move);
         backright.setTargetPosition(backright.getCurrentPosition() + move);
+        runToPosition(speed);
     }
 
-    private void runToPosition(double speed) {
-        frontleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        frontleft.setPower(speed);
-        frontright.setPower(speed);
-        backleft.setPower(speed);
-        backright.setPower(speed);
-
-        while (opModeIsActive() &&
-                (frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy())) {
-            telemetry.addData("Moving...", "FL: %d FR: %d BL: %d BR: %d",
-                    frontleft.getCurrentPosition(),
-                    frontright.getCurrentPosition(),
-                    backleft.getCurrentPosition(),
-                    backright.getCurrentPosition());
-            telemetry.update();
-        }
-
-        stopAllDriveMotors();
-        resetAndRunEncoders(frontleft, frontright, backleft, backright);
-        sleep(250);
-    }
-
-    private void stopAllDriveMotors() {
-        frontleft.setPower(0);
-        frontright.setPower(0);
-        backleft.setPower(0);
-        backright.setPower(0);
-    }
-
-
+    // === Intake/Outtake Helpers ===
     private void runIntake(long durationMs) {
         intake.setPower(1.0);
         telemetry.addLine("Intake running...");
-        telemetry.addData("Intake Power", intake.getPower());
         telemetry.update();
         sleep(durationMs);
         intake.setPower(0);
@@ -179,8 +229,6 @@ public class Auto_Amulya extends LinearOpMode {
         outtakeleft.setPower(1.0);
         outtakeright.setPower(1.0);
         telemetry.addLine("Outtake running...");
-        telemetry.addData("OuttakeLeft Power", outtakeleft.getPower());
-        telemetry.addData("OuttakeRight Power", outtakeright.getPower());
         telemetry.update();
         sleep(durationMs);
         outtakeleft.setPower(0);
@@ -190,6 +238,7 @@ public class Auto_Amulya extends LinearOpMode {
         sleep(250);
     }
 }
+
 
 
 
