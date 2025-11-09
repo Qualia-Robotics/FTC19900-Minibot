@@ -2,6 +2,5 @@
 MAKSIM
 STOP
 EATING
-DORITOS
-__________
+DORRITOS
  */
