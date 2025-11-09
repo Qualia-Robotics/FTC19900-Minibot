@@ -4,6 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+//Used for the list of buttons
+
+import java.util.ArrayList;
+import java.util.List;
+
+
 @TeleOp
 public class JustWheels extends OpMode {
     private DcMotor leftDrive;
@@ -16,6 +22,7 @@ public class JustWheels extends OpMode {
         float x;
         float y;
         boolean isOn;
+
         x = gamepad1.right_stick_x;
         y = -gamepad1.right_stick_y;
         isOn = gamepad1.a;
