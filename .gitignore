@@ -82,3 +82,4 @@ lint/tmp/
 
 # AI assistant files
 CLAUDE.md
+.claude/
