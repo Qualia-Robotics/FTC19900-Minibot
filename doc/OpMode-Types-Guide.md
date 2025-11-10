@@ -1757,6 +1757,765 @@ double seconds = timer.seconds();  // Get elapsed time
 
 ---
 
+## Beginner Learning Path
+
+This section provides a structured, step-by-step path for teams new to FTC OpMode programming. Each phase builds on the previous one with clear goals, hands-on exercises, and resources.
+
+---
+
+### Phase 0: Java Fundamentals (Week 0-1)
+
+**Goal**: Ensure you have the Java knowledge needed for FTC programming
+
+**What to Learn**:
+1. **Basic Java Syntax**
+   - Variables and data types (int, double, boolean, String)
+   - If statements and conditional logic
+   - While loops and for loops
+   - Methods (functions) and parameters
+
+2. **Object-Oriented Basics**
+   - What is a class?
+   - What is an object?
+   - Methods vs functions
+   - The `this` keyword
+
+3. **Java Keywords You'll Use**
+   - `public`, `private`, `void`
+   - `extends` (inheritance)
+   - `@Override` (annotation)
+   - `new` (creating objects)
+
+**Resources**:
+- **Java Basics**: [W3Schools Java Tutorial](https://www.w3schools.com/java/)
+- **FTC-Specific Java**: [FTC Docs - Programming Resources](https://ftc-docs.firstinspires.org/en/latest/programming_resources/index.html)
+- **Video**: Search YouTube for "Java for Beginners"
+- **Practice**: [Codecademy - Learn Java](https://www.codecademy.com/learn/learn-java) (free course)
+
+**Practice Exercise**:
+Write a simple Java program that:
+1. Creates a class called `Robot`
+2. Has a method `drive(double power)`
+3. Prints the power value to console
+
+**Deliverable**: Basic understanding of classes, methods, and Java syntax
+
+**Time Estimate**: 1 week (if completely new to programming)
+
+---
+
+### Phase 1: Understanding OpMode Basics (Week 1-2)
+
+**Goal**: Understand the two OpMode types and when to use each
+
+**What to Learn**:
+1. **LinearOpMode**
+   - Sequential execution (top to bottom)
+   - `runOpMode()` method
+   - `waitForStart()` and `opModeIsActive()`
+   - When to use `sleep()`
+
+2. **OpMode (Iterative)**
+   - Event-driven execution
+   - `init()`, `init_loop()`, `start()`, `loop()`, `stop()` methods
+   - Fixed ~50 Hz loop rate
+   - Why you can't use `sleep()` in `loop()`
+
+3. **Key Differences**
+   - Blocking vs non-blocking
+   - Loop control (manual vs automatic)
+   - Best use cases for each
+
+**Resources**:
+- **This Guide**: Read "The Two Base OpMode Types" and "Comparison Table" sections above
+- **FTC Docs - OpMode**: [Understanding OpModes](https://ftc-docs.firstinspires.org/en/latest/programming_resources/tutorial_specific/android_studio/creating_op_modes/Creating-and-Running-an-Op-Mode-%28Android-Studio%29.html)
+- **Game Manual 0**: [OpMode Basics](https://gm0.org/en/latest/docs/software/tutorials/opmode.html)
+- **Video**: Search "FTC OpMode Tutorial" on YouTube
+
+**Practice Tasks**:
+1. Read both `BasicOpMode_Linear.java` and `StarterBotTeleop.java` from TeamCode
+2. Identify where initialization happens in each
+3. Find the main loop in each
+4. Notice how LinearOpMode uses `waitForStart()` vs OpMode using `start()`
+
+**Deliverable**: Can explain the difference between LinearOpMode and OpMode to a teammate
+
+**Time Estimate**: 1 week
+
+---
+
+### Phase 2: Your First LinearOpMode (Week 2-3)
+
+**Goal**: Write and run your first working LinearOpMode for teleop
+
+**What to Build**:
+1. Simple 2-motor tank drive
+2. Joystick control (left stick Y = left motor, right stick Y = right motor)
+3. Telemetry showing motor powers
+4. Error handling for missing hardware
+
+**Key Concepts**:
+- Hardware mapping (`hardwareMap.get()`)
+- Motor directions (FORWARD vs REVERSE)
+- Gamepad input (`gamepad1.left_stick_y`)
+- Telemetry (`telemetry.addData()`, `telemetry.update()`)
+- Annotations (`@TeleOp`, `@Disabled`)
+
+**Step-by-Step Guide**:
+
+1. **Create the file**: `TeamCode/src/main/java/org/firstinspires/ftc/teamcode/MyFirstTeleOp.java`
+
+2. **Copy this starter code**:
+```java
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+@TeleOp(name="My First TeleOp", group="Learning")
+public class MyFirstTeleOp extends LinearOpMode {
+
+    private DcMotor leftMotor = null;
+    private DcMotor rightMotor = null;
+
+    @Override
+    public void runOpMode() {
+        // TODO: Add your code here
+        // 1. Initialize motors (hardwareMap.get)
+        // 2. Set motor directions
+        // 3. Display initialization status
+        // 4. Wait for start
+        // 5. Main loop: read gamepad, set motor powers, update telemetry
+    }
+}
+```
+
+3. **Configure hardware** in Driver Station app:
+   - Motor Port 0: "left_motor"
+   - Motor Port 1: "right_motor"
+
+4. **Test incrementally**:
+   - Test hardware mapping (does it crash?)
+   - Test one motor at a time
+   - Test both motors together
+   - Test joystick control
+   - Add telemetry
+
+**Resources**:
+- **This Guide**: See "LinearOpMode Deep Dive" section above
+- **Reference Sample**: `BasicOpMode_Linear.java` in TeamCode
+- **FTC Docs**: [Creating Your First OpMode](https://ftc-docs.firstinspires.org/en/latest/programming_resources/tutorial_specific/android_studio/creating_op_modes/Creating-and-Running-an-Op-Mode-%28Android-Studio%29.html)
+- **Video**: Search "FTC First OpMode Tutorial"
+
+**Common Issues**:
+- OpMode doesn't appear → Check `@TeleOp` annotation, remove `@Disabled` if present
+- Motors run backwards → Use `setDirection(DcMotor.Direction.REVERSE)`
+- Robot doesn't move → Check motor configuration names match code
+- Crash on INIT → Check hardware mapping names match Driver Station config
+
+**Deliverable**: Working TeleOp where you can drive the robot with gamepad
+
+**Time Estimate**: 1-2 weeks
+
+---
+
+### Phase 3: Your First Autonomous (Week 3-4)
+
+**Goal**: Create a simple autonomous routine using LinearOpMode
+
+**What to Build**:
+1. Time-based autonomous
+2. Drive forward 2 seconds
+3. Turn right 1 second
+4. Drive forward 2 seconds
+5. Stop
+
+**Key Concepts**:
+- `@Autonomous` annotation
+- `sleep()` method for timing
+- Creating helper functions
+- Always checking `opModeIsActive()`
+
+**Step-by-Step Guide**:
+
+1. **Create the file**: `MyFirstAuto.java`
+
+2. **Basic structure**:
+```java
+@Autonomous(name="My First Auto", group="Learning")
+public class MyFirstAuto extends LinearOpMode {
+
+    private DcMotor leftMotor, rightMotor;
+
+    @Override
+    public void runOpMode() {
+        // 1. Initialize hardware
+        initHardware();
+
+        // 2. Show status
+        telemetry.addData("Status", "Ready");
+        telemetry.update();
+
+        // 3. Wait for start
+        waitForStart();
+
+        // 4. Execute autonomous sequence
+        driveForward(2000);   // 2 seconds
+        turnRight(1000);      // 1 second
+        driveForward(2000);   // 2 seconds
+        stopMotors();
+    }
+
+    private void initHardware() {
+        // TODO: Get motors from hardwareMap
+        // TODO: Set directions
+    }
+
+    private void driveForward(long milliseconds) {
+        // TODO: Set both motors to positive power
+        // TODO: Sleep for specified time
+        // TODO: Stop motors
+    }
+
+    private void turnRight(long milliseconds) {
+        // TODO: Set motors to opposite powers
+        // TODO: Sleep for specified time
+        // TODO: Stop motors
+    }
+
+    private void stopMotors() {
+        // TODO: Set motor powers to 0
+    }
+}
+```
+
+3. **Test safely**:
+   - Start with low power (0.3)
+   - Ensure robot has space to move
+   - Be ready to hit STOP button
+   - Test each movement separately first
+
+**Resources**:
+- **This Guide**: See "Example 1: Simple Autonomous" in LinearOpMode section
+- **Reference Sample**: `RobotAutoDriveByTime_Linear.java`
+- **Game Manual 0**: [Autonomous Basics](https://gm0.org/en/latest/docs/software/tutorials/autonomous.html)
+
+**Practice Tasks**:
+1. Make robot drive in a square
+2. Adjust timing to match exact distance
+3. Try different power levels (what's too fast? too slow?)
+4. Add telemetry to show which step is executing
+
+**Deliverable**: Autonomous that completes a simple sequence reliably
+
+**Time Estimate**: 1 week
+
+---
+
+### Phase 4: Encoder-Based Autonomous (Week 4-6)
+
+**Goal**: Upgrade autonomous to use encoders for accuracy
+
+**What to Learn**:
+1. What are encoders and how they work
+2. Motor run modes (RUN_USING_ENCODER, RUN_TO_POSITION)
+3. Encoder counts and calibration
+4. Waiting for motors to reach target
+
+**Key Concepts**:
+- `setMode(DcMotor.RunMode.*)`
+- `getCurrentPosition()`
+- `setTargetPosition()`
+- `isBusy()` and `idle()`
+- Encoder counts per revolution (motor-specific)
+
+**Calibration Process**:
+1. **Find your motor's encoder counts**:
+   - Check motor spec sheet (e.g., goBILDA 5203 = 537.7 counts/rev)
+   - Or measure: rotate motor one full turn, read encoder value
+
+2. **Measure wheel diameter** accurately
+   - Use calipers if available
+   - Common FTC wheels: 75mm, 90mm, 96mm, 100mm
+
+3. **Calculate counts per inch/mm**:
+   ```java
+   COUNTS_PER_MOTOR_REV = 537.7;  // Your motor
+   WHEEL_DIAMETER_MM = 96.0;       // Your wheels
+   COUNTS_PER_MM = COUNTS_PER_MOTOR_REV / (WHEEL_DIAMETER_MM * Math.PI);
+   ```
+
+4. **Test and adjust**:
+   - Drive known distance (e.g., 1000mm)
+   - Measure actual distance traveled
+   - Adjust multiplier if needed
+
+**Resources**:
+- **This Guide**: See "Example 2: Encoder-Based Autonomous" above
+- **Reference Sample**: `RobotAutoDriveByEncoder_Linear.java`
+- **Game Manual 0**: [Encoders Explained](https://gm0.org/en/latest/docs/software/concepts/encoders.html)
+- **FTC Docs**: [Using Encoders](https://ftc-docs.firstinspires.org/en/latest/programming_resources/shared/using_encoders/using-encoders.html)
+- **Video**: Search "FTC Encoders Tutorial"
+
+**Practice Tasks**:
+1. Drive exactly 24 inches forward
+2. Turn exactly 90 degrees
+3. Drive in a perfect square (12-inch sides)
+4. Test reliability (10 runs, measure variance)
+
+**Deliverable**: Autonomous using encoders with ±2 inch accuracy
+
+**Time Estimate**: 2 weeks
+
+---
+
+### Phase 5: Introduction to OpMode (Iterative) (Week 6-8)
+
+**Goal**: Understand iterative OpMode and when to use it
+
+**What to Learn**:
+1. Event-driven vs sequential programming
+2. The 5 lifecycle methods
+3. State machines using enums
+4. ElapsedTime for non-blocking timing
+5. Why `sleep()` doesn't work
+
+**Key Concepts**:
+- `init()` - called once on INIT
+- `init_loop()` - called repeatedly while waiting
+- `start()` - called once on START
+- `loop()` - called repeatedly (~50 Hz) during match
+- `stop()` - called once on STOP
+
+**Step-by-Step Guide**:
+
+1. **Study StarterBotTeleop.java**:
+   - Find each of the 5 methods
+   - Notice how hardware is initialized in `init()`
+   - See how `loop()` reads gamepad and sets motors
+   - Look for state machines (enums)
+
+2. **Convert your LinearOpMode TeleOp to OpMode**:
+
+**Before (LinearOpMode)**:
+```java
+@TeleOp(name="Linear TeleOp")
+public class LinearTeleOp extends LinearOpMode {
+    private DcMotor motor;
+
+    @Override
+    public void runOpMode() {
+        motor = hardwareMap.get(DcMotor.class, "motor");
+        waitForStart();
+
+        while (opModeIsActive()) {
+            motor.setPower(gamepad1.left_stick_y);
+            telemetry.addData("Power", motor.getPower());
+            telemetry.update();
+        }
+    }
+}
+```
+
+**After (OpMode)**:
+```java
+@TeleOp(name="Iterative TeleOp")
+public class IterativeTeleOp extends OpMode {
+    private DcMotor motor;
+
+    @Override
+    public void init() {
+        motor = hardwareMap.get(DcMotor.class, "motor");
+        telemetry.addData("Status", "Initialized");
+    }
+
+    @Override
+    public void loop() {
+        motor.setPower(gamepad1.left_stick_y);
+        telemetry.addData("Power", motor.getPower());
+    }
+}
+```
+
+**Notice**:
+- No `waitForStart()` (handled automatically)
+- No `while (opModeIsActive())` (loop called automatically)
+- `telemetry.update()` called automatically
+
+**Resources**:
+- **This Guide**: See "OpMode (Iterative) Deep Dive" section above
+- **Reference Sample**: `StarterBotTeleop.java`
+- **Game Manual 0**: [Iterative OpMode](https://gm0.org/en/latest/docs/software/tutorials/opmode.html)
+
+**Practice Tasks**:
+1. Convert your LinearOpMode teleop to OpMode
+2. Add a simple state machine (motor on/off toggle)
+3. Add `init_loop()` to show encoder position before start
+4. Compare responsiveness vs LinearOpMode
+
+**Deliverable**: Understanding of when to use LinearOpMode vs OpMode
+
+**Time Estimate**: 2 weeks
+
+---
+
+### Phase 6: State Machines (Week 8-10)
+
+**Goal**: Master state machines for complex robot control
+
+**What to Learn**:
+1. What is a state machine?
+2. Using enums to define states
+3. Switch statements for state logic
+4. Non-blocking timing with ElapsedTime
+5. Multiple independent state machines
+
+**Key Concepts**:
+- Each state represents a robot configuration
+- Transitions happen based on inputs or timers
+- All state machines run every loop (non-blocking)
+- Each system (drive, arm, intake) has own state machine
+
+**Example: Simple Arm State Machine**:
+
+```java
+// Define states
+private enum ArmState {
+    DOWN,       // Arm is down
+    MOVING_UP,  // Arm is moving up
+    UP,         // Arm is up
+    MOVING_DOWN // Arm is moving down
+}
+
+private ArmState armState = ArmState.DOWN;
+private ElapsedTime armTimer = new ElapsedTime();
+
+private void armStateMachine() {
+    switch (armState) {
+        case DOWN:
+            armMotor.setPower(0);
+            if (gamepad1.y) {  // Y button pressed
+                armState = ArmState.MOVING_UP;
+                armTimer.reset();
+            }
+            break;
+
+        case MOVING_UP:
+            armMotor.setPower(0.5);
+            if (armTimer.seconds() > 1.5) {  // After 1.5 seconds
+                armState = ArmState.UP;
+            }
+            break;
+
+        case UP:
+            armMotor.setPower(0.1);  // Hold position
+            if (gamepad1.a) {  // A button pressed
+                armState = ArmState.MOVING_DOWN;
+                armTimer.reset();
+            }
+            break;
+
+        case MOVING_DOWN:
+            armMotor.setPower(-0.5);
+            if (armTimer.seconds() > 1.5) {  // After 1.5 seconds
+                armState = ArmState.DOWN;
+            }
+            break;
+    }
+}
+```
+
+**Resources**:
+- **This Guide**: See "OpMode State Machine Pattern" section above
+- **Game Manual 0**: [State Machines](https://gm0.org/en/latest/docs/software/tutorials/state-machines.html)
+- **Reference**: `StarterBotTeleop.java` (launcher state machine)
+- **Video**: Search "FTC State Machine Tutorial"
+
+**Practice Tasks**:
+1. Create a 2-state toggle (motor on/off)
+2. Add a 3-state system (stopped/forward/reverse)
+3. Build a 4-state arm controller (down/moving_up/up/moving_down)
+4. Run two state machines simultaneously (drive + arm)
+
+**Deliverable**: OpMode with multiple independent state machines
+
+**Time Estimate**: 2 weeks
+
+---
+
+## Suggested Weekly Schedule
+
+### For Teams Meeting 2x Per Week (3-hour sessions)
+
+**Week 1-2: Fundamentals**
+- Session 1: Java basics review, set up Android Studio
+- Session 2: Read OpMode guide, study sample code
+- Session 3: Write first LinearOpMode (tank drive)
+- Session 4: Debug and test first TeleOp
+
+**Week 3-4: Autonomous**
+- Session 1: Time-based autonomous (drive forward, turn)
+- Session 2: Test and refine timing
+- Session 3: Learn about encoders, calibrate
+- Session 4: Implement encoder-based autonomous
+
+**Week 5-6: Advanced TeleOp**
+- Session 1: Add speed control modes to TeleOp
+- Session 2: Add manipulator (arm/claw/intake)
+- Session 3: Refine driver controls based on feedback
+- Session 4: Practice for scrimmage
+
+**Week 7-8: OpMode Introduction**
+- Session 1: Study OpMode structure, convert TeleOp
+- Session 2: Implement simple state machine
+- Session 3: Add second system with state machine
+- Session 4: Test and compare with LinearOpMode
+
+**Week 9-10: Competition Prep**
+- Session 1: Refine autonomous reliability
+- Session 2: Optimize TeleOp for speed/precision
+- Session 3: Create multiple autonomous options
+- Session 4: Practice matches and driver training
+
+---
+
+## Hands-On Exercises
+
+### Exercise 1: Debug the Broken OpMode
+
+Given this broken code, find and fix the errors:
+
+```java
+@TeleOp(name="Broken OpMode")
+public class BrokenOpMode extends LinearOpMode {
+    public void runOpMode() {
+        DcMotor motor = hardwareMap.get(DcMotor.class, "motor");
+
+        waitForStart();
+
+        while (true) {  // ❌ Error 1
+            motor.setPower(gamepad1.left_stick_y);
+            sleep(1000);  // ❌ Error 2
+        }
+    }
+}
+```
+
+**Errors**:
+1. `while (true)` should be `while (opModeIsActive())`
+2. `sleep(1000)` blocks for 1 second each loop (robot unresponsive)
+
+**Solution**: See "Common Mistakes" section above
+
+---
+
+### Exercise 2: Add a Feature
+
+Starting with `BasicOpMode_Linear.java`, add these features:
+
+1. **Speed control modes**:
+   - Right bumper = slow mode (30% power)
+   - Left bumper = turbo mode (100% power)
+   - Default = normal mode (70% power)
+
+2. **Deadzone**:
+   - Ignore joystick values less than 0.05
+
+3. **Telemetry**:
+   - Show current speed mode
+   - Show motor powers
+   - Show loop count
+
+**Solution**: See Phase 5 in Mecanum-Drive-Guide.md for reference
+
+---
+
+### Exercise 3: Convert LinearOpMode to OpMode
+
+Convert this LinearOpMode to iterative OpMode:
+
+```java
+@TeleOp(name="Convert Me")
+public class ConvertMe extends LinearOpMode {
+    private DcMotor motor;
+    private Servo servo;
+
+    @Override
+    public void runOpMode() {
+        motor = hardwareMap.get(DcMotor.class, "motor");
+        servo = hardwareMap.get(Servo.class, "servo");
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+            motor.setPower(gamepad1.left_stick_y);
+
+            if (gamepad1.a) {
+                servo.setPosition(1.0);
+            } else {
+                servo.setPosition(0.0);
+            }
+        }
+    }
+}
+```
+
+**Your task**: Rewrite as OpMode with `init()` and `loop()` methods
+
+**Solution**:
+```java
+@TeleOp(name="Converted")
+public class Converted extends OpMode {
+    private DcMotor motor;
+    private Servo servo;
+
+    @Override
+    public void init() {
+        motor = hardwareMap.get(DcMotor.class, "motor");
+        servo = hardwareMap.get(Servo.class, "servo");
+    }
+
+    @Override
+    public void loop() {
+        motor.setPower(gamepad1.left_stick_y);
+
+        if (gamepad1.a) {
+            servo.setPosition(1.0);
+        } else {
+            servo.setPosition(0.0);
+        }
+    }
+}
+```
+
+---
+
+## Milestones and Checkpoints
+
+### ✅ Checkpoint 1: Java Basics (Week 1)
+- [ ] Understand classes and objects
+- [ ] Can write a method with parameters
+- [ ] Know what `@Override` means
+- [ ] Comfortable with if/while/for loops
+
+### ✅ Checkpoint 2: First TeleOp (Week 2-3)
+- [ ] Can create a LinearOpMode file
+- [ ] Understand `@TeleOp` annotation
+- [ ] Successfully initialize hardware
+- [ ] Robot responds to gamepad
+- [ ] Telemetry displays information
+
+### ✅ Checkpoint 3: First Autonomous (Week 4)
+- [ ] Can use `@Autonomous` annotation
+- [ ] Understand `sleep()` for timing
+- [ ] Created helper functions
+- [ ] Autonomous completes sequence
+- [ ] Always checks `opModeIsActive()`
+
+### ✅ Checkpoint 4: Encoder Mastery (Week 6)
+- [ ] Know motor's encoder counts per revolution
+- [ ] Calibrated COUNTS_PER_MM constant
+- [ ] Can drive exact distances (±2 inches)
+- [ ] Understand RUN_TO_POSITION mode
+- [ ] Use `isBusy()` and `idle()` correctly
+
+### ✅ Checkpoint 5: OpMode Understanding (Week 8)
+- [ ] Can explain difference between LinearOpMode and OpMode
+- [ ] Know all 5 lifecycle methods
+- [ ] Understand why `sleep()` doesn't work in `loop()`
+- [ ] Can convert simple LinearOpMode to OpMode
+- [ ] Appreciate when to use each type
+
+### ✅ Checkpoint 6: State Machine Proficiency (Week 10)
+- [ ] Can create enum for states
+- [ ] Use switch statement for state logic
+- [ ] Implement non-blocking timing
+- [ ] Run multiple state machines simultaneously
+- [ ] Robot systems work independently
+
+### ✅ Checkpoint 7: Competition Ready (Week 12)
+- [ ] Have reliable autonomous (9/10 success rate)
+- [ ] Drivers comfortable with TeleOp controls
+- [ ] Code doesn't crash (tested 20+ times)
+- [ ] Telemetry helpful for debugging
+- [ ] Understand all code in OpModes
+
+---
+
+## Common Questions from Beginners
+
+### Q: Do I really need to learn both types?
+**A**: Start with LinearOpMode. Once comfortable, learn OpMode for complex teleop. Many teams use LinearOpMode for everything and that's fine!
+
+### Q: What if I can't get hardware to initialize?
+**A**: Check these:
+1. Motor name in code matches Driver Station config exactly (case-sensitive!)
+2. Motor is plugged into correct port
+3. Control Hub is connected to Driver Station
+4. Try adding error handling (see "Mistake 4" section)
+
+### Q: My autonomous timing is inconsistent. Why?
+**A**: Battery voltage affects motor speed. Low battery = slower = drives less far. Solution: Use encoders instead of time, or always use fresh battery.
+
+### Q: How do I know when my code is "good enough"?
+**A**: Can you:
+- Run it 10 times without crashes?
+- Explain what each line does?
+- Add a new feature in < 30 minutes?
+- Debug an issue without starting over?
+
+If yes to all four, your code is solid!
+
+### Q: Should I copy sample code or write from scratch?
+**A**: **Copy first**, then **modify**. Learn by changing existing code before writing new code. All FTC teams start by copying samples!
+
+### Q: What's the #1 mistake beginners make?
+**A**: Using `sleep()` in OpMode.loop(). Remember: LinearOpMode = can use sleep, OpMode = cannot use sleep!
+
+---
+
+## Next Steps After Mastering OpModes
+
+Once you're comfortable with both OpMode types:
+
+1. **Add Robot Mechanisms**
+   - Arms, claws, lifts, intakes, launchers
+   - Each mechanism = new state machine
+   - Practice running multiple systems simultaneously
+
+2. **Learn Vision Processing**
+   - AprilTag detection
+   - Color-based object detection
+   - TensorFlow object recognition
+   - See samples: `ConceptAprilTagEasy.java`
+
+3. **Explore Advanced Autonomous**
+   - Road Runner path planning
+   - PID control for precision
+   - Sensor-based decision making
+   - Dead wheel odometry
+
+4. **Optimize Performance**
+   - Reduce cycle times
+   - Improve driver controls
+   - Add driver assistance features
+   - Implement telemetry logging
+
+5. **Study Top Teams**
+   - Watch competition videos
+   - Read build logs on Chief Delphi
+   - Join FTC Discord for advice
+   - Attend workshops and scrimmages
+
+**Remember**: Programming is iterative. Start simple, test often, improve gradually!
+
+---
+
+*Learning Path created for beginner FTC teams - DECODE 2025-2026 season*
+
+---
+
 ## Resources
 
 ### Official Documentation
