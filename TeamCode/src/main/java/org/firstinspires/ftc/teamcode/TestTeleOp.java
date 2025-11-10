@@ -38,7 +38,7 @@ public class TestTeleOp extends LinearOpMode {
             {
                 // Calling our methods while the OpMode is running
                 autoAimToggle.update(gamepad1.b);
-                if(autoAimToggle.getState() == false)
+                if(!autoAimToggle.getState())
                 {
                     robot.splitStickArcadeDrive();
                 }
