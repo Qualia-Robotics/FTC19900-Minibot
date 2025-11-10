@@ -73,10 +73,12 @@ public class LogitechSubsystem {
         }
     }
 
-    public void targetapril(Telemetry telemetry) {
+    public void targetApril(Telemetry telemetry) {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null && detection.id == targetid) {
+                telemetry.addData("April tag height ", detection.ftcPose.z);
+                telemetry.addData("April tag angle ", detection.ftcPose.yaw);
                 telemetry.addData("April tag id ", targetid);
             }
         }
