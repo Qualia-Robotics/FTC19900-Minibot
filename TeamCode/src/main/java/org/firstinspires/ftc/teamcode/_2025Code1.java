@@ -4,7 +4,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.C
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.MM;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,7 +22,6 @@ public class _2025Code1 extends OpMode {
   boolean speedtoggle;
   double WheelSpeedDivisor;
   int mode;
-  int makeshiftpowervariable;
   float vertical;
   float horizontal;
   float pivot;
@@ -34,7 +32,6 @@ public class _2025Code1 extends OpMode {
     speedtoggle = true;
     WheelSpeedDivisor = 1.15;
     mode = 0;
-    makeshiftpowervariable = 0;
     back_left.setDirection(DcMotor.Direction.REVERSE);
     front_left.setDirection(DcMotor.Direction.REVERSE);
     odo.setOffsets(-84.0, -168.0, MM);//tuned for 3110-0002-0001, may be changed
