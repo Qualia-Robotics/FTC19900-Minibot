@@ -1,0 +1,129 @@
+//package org.firstinspires.ftc.teamcode.subsystems.intake;
+//
+//
+//import com.qualcomm.robotcore.hardware.CRServo;
+//import com.qualcomm.robotcore.hardware.DcMotorSimple;
+//import com.qualcomm.robotcore.hardware.Servo;
+//import com.qualcomm.robotcore.util.ElapsedTime;
+//
+//import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+//import org.firstinspires.ftc.teamcode.Hardware;
+//import org.firstinspires.ftc.teamcode.util.pidcore.PIDCore;
+//
+//class IntakeSubsystem {
+//    private final Hardware hw;
+//
+//
+//    public IntakeSubsystem(Hardware hw) {
+//        this.hw = hw;
+//
+//
+//    }
+//
+//    public void intake() {
+//        hw.intake.setPower(1.0);
+//
+//    }
+//
+//
+//
+//    public void stopintake() {
+//        hw.intake.setPower(0.0);
+//
+//    }
+//    public void turretTurn() {
+//        hw.sorter.setPosition(0.5);
+//    }
+//    public void turret2() {
+//        hw.sorter.setPosition(0.0);
+//    }
+//
+//
+//
+//}
+//
+//
+//
+//
+//
+
+package org.firstinspires.ftc.teamcode.subsystems.intake;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import org.firstinspires.ftc.teamcode.Hardware;
+
+class IntakeSubsystem {
+
+    private final Hardware hw;
+
+
+    public IntakeSubsystem(Hardware hw) {
+        this.hw = hw;
+        hw.intake.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+
+    }
+
+    public void intake() {
+        hw.intake.setPower(1.0);
+
+    }
+
+
+
+    public void stopintake() {
+        hw.intake.setPower(0.0);
+
+    }
+
+//    public void turretTurn() {
+//        hw.turn.setPosition(0.0);
+//
+//    }
+//    public void turretTurn2() {
+//        hw.turn.setPosition(0.18);
+//
+//    }
+//    public void turretTurn3() {
+//        hw.turn.setPosition(0.36);
+
+    //    }
+    public void push() {
+        hw.pusher.setPosition(0.3);
+
+    }
+//    public void rainbetIntake(){
+//        hw.sorter.setPower(0.67);
+//    }
+//    public void stopTurn(){
+//        hw.sorter.setPower(0.0);
+//    }
+
+
+    public void shooter(double targetVelocity) {
+        hw.shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hw.shooter.setVelocityPIDFCoefficients(0.002, 0.0001, 0.0001, 12.0);
+        hw.shooter.setVelocity(targetVelocity);
+
+    }
+    public void shooterstop() {
+        hw.shooter.setVelocity(0);
+
+    }
+    public void pull() {
+        hw.pusher.setPosition(0.0);
+
+    }
+
+
+
+
+
+}
+
+
+
+
