@@ -53,12 +53,14 @@ public class SampleTeleOpMode extends LinearOpMode {
     private static final double SORTER_SECOND_POS = 0.42;
     private static final double SORTER_THIRD_POS = 0.88;
 
+    private String ALLIANCE = "blue";
+
     @Override
     public void runOpMode() throws InterruptedException {
         hw = Hardware.getInstance(hardwareMap);
         mecanumCommand = new MecanumCommand(hw);
         limelightsub = new LimelightSubsystem(hw, telemetry);
-        logitechsub = new LogitechSubsystem();
+
         hw.intake.setDirection(DcMotorSimple.Direction.REVERSE);
         hw.shooter.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -66,9 +68,21 @@ public class SampleTeleOpMode extends LinearOpMode {
         hw.pusher.setPosition(PUSHER_DOWN);
         hw.sorter.setPosition(0);
 
-
+        while (opModeInInit()){
+            if (gamepad1.b){
+                ALLIANCE = "red";
+            }
+            if(gamepad1.x){
+                ALLIANCE = "blue";
+            }
+            telemetry.addData("Alliance: ",ALLIANCE);
+            telemetry.update();
+        }
         // Wait for start button to be pressed
         waitForStart();
+
+
+        logitechsub = new LogitechSubsystem(hw, ALLIANCE);
 
         logitechsub.pattern();
 
