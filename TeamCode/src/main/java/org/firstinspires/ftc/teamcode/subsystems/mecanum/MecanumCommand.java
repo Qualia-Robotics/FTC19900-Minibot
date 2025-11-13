@@ -89,6 +89,13 @@ public class MecanumCommand {
         return isPositionReached();
     }
 
+    public void pivot (double power){
+        hw.lf.setPower(power);
+        hw.lb.setPower(power);
+        hw.rb.setPower(-power);
+        hw.rf.setPower(-power);
+    }
+
     public void setFinalPosition(double velocity, double x, double y, double theta) {
         this.xFinal = x;
         this.yFinal = y;
