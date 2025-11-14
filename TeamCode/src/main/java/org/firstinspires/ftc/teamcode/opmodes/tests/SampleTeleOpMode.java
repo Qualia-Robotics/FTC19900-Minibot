@@ -87,6 +87,7 @@ public class SampleTeleOpMode extends LinearOpMode {
         // Wait for start button to be pressed
         waitForStart();
 
+
         logitechsub = new LogitechSubsystem(hw, ALLIANCE);
 
         logitechsub.pattern();
