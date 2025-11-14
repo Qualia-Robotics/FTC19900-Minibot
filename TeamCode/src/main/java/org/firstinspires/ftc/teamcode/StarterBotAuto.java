@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -59,12 +60,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * main robot "loop," continuously checking for conditions that allow us to move to the next step.
  */
 
-@Autonomous(name="org.firstinspires.ftc.teamcode.StarterBotAuto", group="StarterBot")
+@Autonomous(name="StarterBotAuto", group="StarterBot")
 //@Disabled
 public class StarterBotAuto extends OpMode
 {
 
-    final double FEED_TIME = 0.20; //The feeder servos run this long when a shot is requested.
+    final double FEED_TIME = 0.4; //The feeder servos run this long when a shot is requested.
+    final double FLIPPER_DOWN = 0.8;
 
     /*
      * When we control our launcher motor, we are using encoders. These allow the control system
@@ -72,8 +74,8 @@ public class StarterBotAuto extends OpMode
      * velocity. Here we are setting the target and minimum velocity that the launcher should run
      * at. The minimum velocity is a threshold for determining when to fire.
      */
-    final double LAUNCHER_TARGET_VELOCITY = 1125;
-    final double LAUNCHER_MIN_VELOCITY = 0;
+    final double LAUNCHER_TARGET_VELOCITY = 1225;
+    final double LAUNCHER_MIN_VELOCITY = 1100;
 
     /*
      * The number of seconds that we wait between each of our 3 shots from the launcher. This
@@ -117,6 +119,7 @@ public class StarterBotAuto extends OpMode
     private DcMotorEx launcher = null;
     private CRServo leftFeeder = null;
     private CRServo rightFeeder = null;
+    private Servo flipper = null;
 
     /*
      * TECH TIP: State Machines
@@ -193,6 +196,7 @@ public class StarterBotAuto extends OpMode
         launcher = hardwareMap.get(DcMotorEx.class,"launcher");
         leftFeeder = hardwareMap.get(CRServo.class, "left_feeder");
         rightFeeder = hardwareMap.get(CRServo.class, "right_feeder");
+        flipper = hardwareMap.get(Servo.class,"flipper");
 
 
         /*
@@ -202,8 +206,8 @@ public class StarterBotAuto extends OpMode
          * Note: The settings here assume direct drive on left and right wheels. Gear
          * Reduction or 90° drives may require direction flips
          */
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightDrive.setDirection(DcMotor.Direction.REVERSE);
 
         /*
          * Here we reset the encoders on our drive motors before we start moving.
@@ -238,12 +242,15 @@ public class StarterBotAuto extends OpMode
          * Much like our drivetrain motors, we set the left feeder servo to reverse so that they
          * both work to feed the ball into the robot.
          */
-        leftFeeder.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFeeder.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
+
+        //Sets the flipper at a constant position to push the balls into the feeders.
+        flipper.setPosition(FLIPPER_DOWN);
     }
 
     /*
@@ -520,6 +527,3 @@ public class StarterBotAuto extends OpMode
         return (driveTimer.seconds() > holdSeconds);
     }
 }
-
-
-
