@@ -75,7 +75,7 @@ public class SampleTeleOpMode extends LinearOpMode {
         hw.pusher.setPosition(PUSHER_DOWN);
         hw.sorter.setPosition(0);
         hw.shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        outtakeCommand.setMaxRPM(6000);
+        outtakeCommand.setMaxRPM(5000);
 
         while (opModeInInit()){
             if (gamepad1.b){
@@ -94,6 +94,7 @@ public class SampleTeleOpMode extends LinearOpMode {
 
         // Loop while OpMode is running
         while (opModeIsActive()) {
+            hw.light.setPosition(0);
             logitechsub.pattern();
             logitechsub.telemetryAprilTag(telemetry);
 
@@ -156,13 +157,18 @@ public class SampleTeleOpMode extends LinearOpMode {
 
             // Outtake
             boolean currentXState = gamepad1.x;
+
+
             if (currentXState && !previousXState) {
                 isOuttakeMotorOn = !isOuttakeMotorOn;
 
                 if (isOuttakeMotorOn){
-                   spunUp = outtakeCommand.spinup();
-                } else if(!isOuttakeMotorOn){
+                  lightOn(outtakeCommand.spinup());
+
+
+                }else if(!isOuttakeMotorOn){
                     outtakeCommand.stopShooter();
+                    hw.light.setPosition(0);
                 }
             }
             previousXState = currentXState;
@@ -207,5 +213,14 @@ public class SampleTeleOpMode extends LinearOpMode {
         telemetry.addData("RPM: ", hw.shooter.getVelocity() * 60.0 / 28.0);
         telemetry.addData("x ", logitechsub.targetApril());
         telemetry.update();
+    }
+    public void lightOn(boolean rpmReached){
+        if(rpmReached && isOuttakeMotorOn){
+            hw.light.setPosition(1);
+        } else {
+            hw.light.setPosition(0);
+        }
+
+
     }
 }
