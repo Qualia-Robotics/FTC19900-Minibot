@@ -26,7 +26,7 @@ public class JustShoot extends LinearOpMode {
 
     double timer;
     State currentState = State.START;
-    double shooterLimit = -2600;
+    double shooterLimit = -2450;
     double shooterRightVelocity;
     int where;
 
