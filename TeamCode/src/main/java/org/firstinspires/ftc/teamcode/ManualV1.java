@@ -4,20 +4,17 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
 import java.util.Arrays;
 
-/**
- * TBD
- */
-@TeleOp(name="Manual V1 (Swyft)", group="Iterative Opmode")
+/** TBD */
+@TeleOp(name = "Manual V1 (Swyft)", group = "Iterative Opmode")
 public class ManualV1 extends OpMode {
 
     // Program constants
     private static final double INCREMENT = 0.001;
 
-    private DcMotor leftFront  = null;
-    private DcMotor leftBack  = null;
+    private DcMotor leftFront = null;
+    private DcMotor leftBack = null;
     private DcMotor rightFront = null;
     private DcMotor rightBack = null;
 
@@ -31,45 +28,49 @@ public class ManualV1 extends OpMode {
     // Current speed
     double[] speeds = new double[4]; // LF, RF, LB, RB
     double leftShooterPower, rightShooterPower, intakePower;
-
-    double maxMoveSpeed=0.3, maxShootPower =1.0, maxIntakePower =1.0;
+    double maxMoveSpeed = 0.3, maxShootPower = 1.0, maxIntakePower = 1.0;
 
     @Override
     public void init() {
         // Strings must match up with the config on the Robot Controller.
-        leftFront   = hardwareMap.get(DcMotor.class, "left_front");
-        rightFront   = hardwareMap.get(DcMotor.class, "right_front");
-        leftBack  = hardwareMap.get(DcMotor.class, "left_back");
-        rightBack  = hardwareMap.get(DcMotor.class, "right_back");
+        leftFront = hardwareMap.get(DcMotor.class, "left_front");
+        rightFront = hardwareMap.get(DcMotor.class, "right_front");
+        leftBack = hardwareMap.get(DcMotor.class, "left_back");
+        rightBack = hardwareMap.get(DcMotor.class, "right_back");
 
-        leftShooter  = hardwareMap.get(DcMotor.class, "left_shooter");
-        rightShooter  = hardwareMap.get(DcMotor.class, "right_shooter");
+        leftShooter = hardwareMap.get(DcMotor.class, "left_shooter");
+        rightShooter = hardwareMap.get(DcMotor.class, "right_shooter");
 
         rightShooter.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        intake  = hardwareMap.get(DcMotor.class, "intake");
+        intake = hardwareMap.get(DcMotor.class, "intake");
     }
 
     void doTelemetry(double[] speeds) {
         telemetry.addData("DryRun", dryRun);
-        telemetry.addData("How to start",   "L1 = TestOnly, R1 = Run");
-        telemetry.addData(
-                "Max Move Speed",   "Move %.2f (DPAD_UP ↑, DPAD_DOWN ↓)", maxMoveSpeed);
-        //:: Shoot %.2f :: Intake %.2f", , maxShootPower, maxIntakePower
+        telemetry.addData("How to start", "L1 = TestOnly, R1 = Run");
+        telemetry.addData("Max Move Speed", "Move %.2f (DPAD_UP ↑, DPAD_DOWN ↓)", maxMoveSpeed);
+        // :: Shoot %.2f :: Intake %.2f", , maxShootPower, maxIntakePower
 
         telemetry.addData("Front", "LF ❂=%.2f\tRF ❂=%.2f", speeds[0], speeds[1]);
         telemetry.addData("Back", "LB ❂=%.2f\tRB ❂=%.2f ", speeds[2], speeds[3]);
 
         telemetry.addLine();
         telemetry.addData(
-                "Shooter", "Left=%.2f :::: Right=%.2f (X↑, Y↓)  === Actual Left %.2f Actual Right %.2f",
-                leftShooterPower, rightShooterPower, leftShooter.getPower(), rightShooter.getPower());
-        telemetry.addData("Intake", "%.2f\t(A↑, B↓) Actual %.2f",  intakePower, intake.getPower());
+                "Shooter",
+                "Left=%.2f :::: Right=%.2f (X↑, Y↓)  === Actual Left %.2f Actual Right %.2f",
+                leftShooterPower,
+                rightShooterPower,
+                leftShooter.getPower(),
+                rightShooter.getPower());
+        telemetry.addData("Intake", "%.2f\t(A↑, B↓) Actual %.2f", intakePower, intake.getPower());
 
         telemetry.addLine();
-        telemetry.addData("LeftStick", "X=%.2f, Y=%.2f", gamepad1.left_stick_x, gamepad1.left_stick_y);
-        telemetry.addData("RightStick", "X=%.2f, Y=%.2f", gamepad1.right_stick_x, gamepad1.right_stick_y);
+        telemetry.addData(
+                "LeftStick", "X=%.2f, Y=%.2f", gamepad1.left_stick_x, gamepad1.left_stick_y);
+        telemetry.addData(
+                "RightStick", "X=%.2f, Y=%.2f", gamepad1.right_stick_x, gamepad1.right_stick_y);
 
         telemetry.update();
     }
@@ -83,7 +84,7 @@ public class ManualV1 extends OpMode {
             intake.setPower(intakePower);
         }
 
-        if (gamepad1.right_bumper){
+        if (gamepad1.right_bumper) {
             dryRun = false;
             Arrays.fill(speeds, 0); // Avoid surprises
             intakePower = leftShooterPower = rightShooterPower = 0;
@@ -121,15 +122,15 @@ public class ManualV1 extends OpMode {
     }
 
     double[] drive() {
-        double drive  = -gamepad1.left_stick_y;
+        double drive = -gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
-        double twist  = gamepad1.right_stick_x;
+        double twist = gamepad1.right_stick_x;
 
         double[] speeds = {
-                (drive + strafe + twist),
-                (drive - strafe - twist),
-                (drive - strafe + twist),
-                (drive + strafe - twist)
+            (drive + strafe + twist),
+            (drive - strafe - twist),
+            (drive - strafe + twist),
+            (drive + strafe - twist)
         };
 
         double max = Math.abs(speeds[0]);
