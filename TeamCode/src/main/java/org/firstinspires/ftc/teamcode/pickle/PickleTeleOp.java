@@ -117,9 +117,14 @@ public class PickleTeleOp extends OpMode {
 
     private LaunchState launchState;
 
+    // Speed control constants
+    final double NORMAL_DRIVE_SPEED = 0.7;  // 70% speed - adjust this value to tune driving feel
+    final double SLOW_DRIVE_SPEED = 0.3;    // 30% speed for precision mode (activated with left bumper)
+
     // Setup a variable for each drive wheel to save power level for telemetry
     double leftPower;
     double rightPower;
+    boolean slowMode = false;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -190,6 +195,18 @@ public class PickleTeleOp extends OpMode {
          */
 
         /*
+         * Set drive motors to RUN_USING_ENCODER for more consistent and controllable driving.
+         * This provides closed-loop velocity control that maintains constant speed even as
+         * battery voltage drops or the robot encounters varying loads.
+         *
+         * IMPORTANT: Make sure your drive motor encoders are properly connected!
+         * If the robot doesn't respond to controls after this change, check that encoder
+         * cables are plugged into the motor ports (not separate encoder ports).
+         */
+        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        /*
          * Here we set our launcher to the RUN_USING_ENCODER runmode.
          * If you notice that you have no control over the velocity of the motor, it just jumps
          * right to a number much higher than your set point, make sure that your encoders are plugged
@@ -247,6 +264,16 @@ public class PickleTeleOp extends OpMode {
     @Override
     public void loop() {
         /*
+         * Toggle slow mode with left bumper for precision driving
+         * This is helpful when you need fine control for alignment or delicate maneuvers
+         */
+        if (gamepad1.left_bumper) {
+            slowMode = true;
+        } else {
+            slowMode = false;
+        }
+
+        /*
          * Here we call a function called arcadeDrive. The arcadeDrive function takes the input from
          * the joysticks, and applies power to the left and right drive motor to move the robot
          * as requested by the driver. "arcade" refers to the control style we're using here.
@@ -254,6 +281,8 @@ public class PickleTeleOp extends OpMode {
          * work to drive the robot forward, and when you move the right joystick left and right
          * both motors work to rotate the robot. Combinations of these inputs can be used to create
          * more complex maneuvers.
+         *
+         * The speed is now reduced to make the robot easier to control!
          */
         arcadeDrive(-gamepad1.left_stick_y, gamepad1.right_stick_x);
 
@@ -275,6 +304,7 @@ public class PickleTeleOp extends OpMode {
         /*
          * Show the state and motor powers
          */
+        telemetry.addData("Drive Mode", slowMode ? "SLOW (30%)" : "NORMAL (60%)");
         telemetry.addData("State", launchState);
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
         telemetry.addData("motorSpeed", launcher.getVelocity());
@@ -296,10 +326,18 @@ public class PickleTeleOp extends OpMode {
      * In contrast, tank mode would have:
      *   - Left stick controls left motors directly
      *   - Right stick controls right motors directly
+     *
+     * Speed control:
+     *   - Normal mode: 60% max speed (easier to control than full speed)
+     *   - Slow mode (left bumper): 30% max speed (precision movements)
      */
     void arcadeDrive(double forward, double rotate) {
-        leftPower = forward + rotate;
-        rightPower = forward - rotate;
+        // Choose speed multiplier based on mode
+        double speedMultiplier = slowMode ? SLOW_DRIVE_SPEED : NORMAL_DRIVE_SPEED;
+
+        // Calculate motor powers with speed reduction
+        leftPower = (forward + rotate) * speedMultiplier;
+        rightPower = (forward - rotate) * speedMultiplier;
 
         /*
          * Send calculated power to wheels
