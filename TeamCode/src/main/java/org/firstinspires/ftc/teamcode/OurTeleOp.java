@@ -36,16 +36,20 @@ public class OurTeleOp extends OpMode {
         feedRoller.setDirection(DcMotor.Direction.REVERSE);
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        telemetry.addLine("a to turn on/off the flywheel")
+        telemetry.addLine("a to turn on/off the flywheel");
         telemetry.addLine("b to turn on/off the agitator");
         telemetry.addLine("x to turn on/off the feed roller");
-        
+        telemetry.addLine("Left bumper for slow speed");
+        telemetry.addLine("right bumper for medium speed");
+
+ 
         telemetry.update();
     }
 
     public void loop() {
         basicMovement();
         turnOnMotors();
+        flyWheel();
     }
 
     public void basicMovement() {
@@ -93,6 +97,8 @@ public class OurTeleOp extends OpMode {
     public void flyWheel() {
         if(flyWheelPowered) {
             flywheel.setVelocity(flyWheelVelocity);
+        } else {
+            flywheel.setVelocity(0);
         }
     }
 }
