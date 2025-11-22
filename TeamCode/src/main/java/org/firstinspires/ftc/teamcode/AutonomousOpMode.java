@@ -5,7 +5,9 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.robot.RobotBaseAutonomous;
 import org.firstinspires.ftc.teamcode.utils.TelemetryMirror;
@@ -30,6 +32,7 @@ public class AutonomousOpMode extends OpMode {
     private PathChain blueLeaveStart1;
     private PathChain redLeaveStart1;
     private TelemetryMirror telemetryMirror;
+    private static ElapsedTime stopWatch = new ElapsedTime();
 
     private void buildPaths() {
         // TODO: build our pedro paths here
@@ -72,12 +75,7 @@ public class AutonomousOpMode extends OpMode {
         // These loop the movements of the robot, these must be called continuously in order to work
         follower.update();
         // TODO: we need to configure the state machine
-        //autonomousPathUpdate();
-
-        if (!done && !follower.isBusy()) {
-            follower.followPath(redLeaveStart1, USE_PANELS);
-            done = USE_PANELS;
-        }
+        autonomousPathUpdate(telemetry);
 
         // Feedback to Driver Hub for debugging
         //telemetry.addData("path state", pathState);
@@ -142,11 +140,14 @@ public class AutonomousOpMode extends OpMode {
      * <p>
      * Below is an example state manager with explanations on what each case does, and how to modify it to fit your own routine.
      */
-    public void autonomousPathUpdate() {
+    public void autonomousPathUpdate(Telemetry telemetry) {
         switch (pathState) {
             case SCORE_PRELOADED:
                 if (!follower.isBusy()) {
                     //follower.followPath(path1);
+                    robotBase.getShooter().startFlywheel(telemetry, -0.825);
+
+                    robotBase.getShooter().fire(telemetry);
                     setNextPathState(PathState.INTAKE_ROW3);
                 }
                 break;
