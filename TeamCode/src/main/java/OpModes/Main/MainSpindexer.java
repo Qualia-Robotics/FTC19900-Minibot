@@ -49,6 +49,7 @@ public class MainSpindexer extends LinearOpMode {
         indexServo = hardwareMap.get(Servo.class, "indexServo");
         intakeServo = hardwareMap.get(CRServo.class, "intakeServo");
         kickerServo = hardwareMap.get(Servo.class, "kicker");
+        //kickerServo.setDirection(Servo.Direction.REVERSE);
         kickerWheelServo = hardwareMap.get(CRServo.class, "kickerWheel");
 
 
@@ -132,13 +133,14 @@ public class MainSpindexer extends LinearOpMode {
             boolean X = gamepad1.x;
             if (X && !prevX) {
                 // Find the division of the next needed color
+
                 int goalDiv = findDivisionWithColor(need_colors[(flag+2) % need_colors.length]);
                 moveToDivision(goalDiv);  // move to that division first
-                kickerWheelServo.setPower(0.7); //Run kicker wheel servo
+                kickerWheelServo.setPower(0.8); //Run kicker wheel servo
 
                 try {
-                    // Pause execution for 3 seconds (3000 milliseconds)
-                    Thread.sleep(350);
+                    // Pause execution for 1.5 seconds (3000 milliseconds)
+                    Thread.sleep(1500);
                 } catch (InterruptedException e) {
                     // Handle the InterruptedException if the thread is interrupted while sleeping
                     e.printStackTrace();
@@ -146,10 +148,12 @@ public class MainSpindexer extends LinearOpMode {
 
 
 
-                kickerServo.setPosition(1); //Flick up kicker servo
+
+
+                kickerServo.setPosition(0.7); //Flick up kicker servo
                 try {
                     // Pause execution for 3 seconds (3000 milliseconds)
-                    Thread.sleep(350);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     // Handle the InterruptedException if the thread is interrupted while sleeping
                     e.printStackTrace();

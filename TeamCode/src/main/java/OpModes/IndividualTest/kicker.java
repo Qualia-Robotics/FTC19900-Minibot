@@ -12,12 +12,13 @@ public class kicker extends OpMode {
     private boolean goingUp = true;    // Flag to track direction
     private boolean lastTriangle = false; // For edge detection
 
-    private final double MIN_POS = 0.011; // ~2 degrees in/ normalized servo units
-    private final double MAX_POS = 1.0;   // 180 degrees
+    private final double MAX_POS = 0.7; // ~2 degrees in/ normalized servo units
+    private final double MIN_POS = 0.011;   //
 
     @Override
     public void init() {
         kickerServo = hardwareMap.get(Servo.class, "kicker"); // Make sure name matches hardware
+
         servoPosition = MIN_POS;
         kickerServo.setPosition(servoPosition);
 
