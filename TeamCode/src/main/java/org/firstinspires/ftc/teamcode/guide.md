@@ -34,14 +34,7 @@ utils/            → Helper classes (math, timers, etc.)
 Each student has their own folder inside `members/`. Example:
 
 ```
-members/om/
-members/ishani/
-members/prathika/
-members/vishwath/
-members/saksham/
-members/adishesh/
-members/shreyank/
-members/bala/
+members/first_name
 ```
 
 **All your code goes inside your own folder.**
