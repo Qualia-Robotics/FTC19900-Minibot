@@ -19,6 +19,7 @@ public class Robot {
         // Initialize all subsystems in a controlled, predictable order
         drive = new DriveSubsystem(hardwareMap);
         shooter = new ShooterController(hardwareMap);
+        limeLight = new LimeLightSubsystem(hardwareMap);
         //intake = new IntakeSubsystem(hardwareMap);
     }
 

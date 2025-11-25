@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.TestOrPrototype;
 
 import android.util.Size;
 
@@ -14,12 +14,12 @@ import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
 
 @Disabled
 @TeleOp(name = "Concept: Vision Color-Sensor", group = "Concept")
-public class MyConceptVisionColorSensor extends LinearOpMode
+public class LimeLightTest extends LinearOpMode
 {
     @Override
     public void runOpMode()
     {
-        
+
         PredominantColorProcessor colorSensor = new PredominantColorProcessor.Builder()
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.1, 0.1, 0.1, -0.1))
                 .setSwatches(
@@ -38,7 +38,7 @@ public class MyConceptVisionColorSensor extends LinearOpMode
                 .setCameraResolution(new Size(320, 240))
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .build();
-                
+
                 // Create the AprilTag processor.
         // aprilTag = new AprilTagProcessor.Builder()
 
@@ -49,7 +49,7 @@ public class MyConceptVisionColorSensor extends LinearOpMode
         //     .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
         //     .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
         //     .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-           
+
         //     // == CAMERA CALIBRATION ==
         //     // If you do not manually specify calibration parameters, the SDK will attempt
         //     // to load a predefined calibration for your camera.
@@ -79,7 +79,7 @@ public class MyConceptVisionColorSensor extends LinearOpMode
                                             result.YCrCb[0], result.YCrCb[1], result.YCrCb[2]));
             telemetry.update();
 
-            sleep(20);
+
         }
     }
 }

@@ -14,9 +14,9 @@ public class mainTele extends LinearOpMode {
     private Robot robot;
     private boolean isRed = true;
     
-    boolean rightAPressedLast = false;
-    boolean rightBPressedLast = false;
-    boolean rightXPressedLast = false;
+    boolean APressedLast = false;
+    boolean BPressedLast = false;
+    boolean XPressedLast = false;
     boolean YPressedLast = false;
     
     
@@ -36,7 +36,7 @@ public class mainTele extends LinearOpMode {
             double turn = gamepad1.right_stick_x; // Rotation
 
             //Change Speed ---------------------------------------------------
-            if (gamepad1.b && !rightBPressedLast) {
+            if (gamepad1.b && !BPressedLast) {
                 robot.drive.toggleSlowMode();
             }
 
@@ -46,7 +46,7 @@ public class mainTele extends LinearOpMode {
             }
 
             // Initiate a long shot
-            if (gamepad2.a && !rightAPressedLast) {
+            if (gamepad2.a && !APressedLast) {
                     robot.shooter.startShot(1, "long");
             }
 
