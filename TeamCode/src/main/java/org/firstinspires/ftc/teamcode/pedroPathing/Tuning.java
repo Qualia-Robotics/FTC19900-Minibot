@@ -94,6 +94,7 @@ public class Tuning extends PanelsSelectableOpMode {
             PanelsConfigurables.INSTANCE.refreshClass(this);
         } else {
             follower = Constants.createFollower(hardwareMap);
+            follower.setMaxPower(Constants.AUTONOMOUS_MOTOR_MAX_POWER);
         }
 
         follower.setStartingPose(new Pose());
