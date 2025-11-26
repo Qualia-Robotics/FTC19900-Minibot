@@ -19,7 +19,8 @@ public class NewTeleOp extends OpMode {
     private DcMotor rightDrive;
 
     private float flyWheelVelocity = 1300;
-
+    private float  ticksPerRev = 288;
+    private float offset = 0;
     private boolean flyWheelPowered;
     private boolean agitatorPowered;
     private boolean feedRollerPowered;
@@ -32,6 +33,8 @@ public class NewTeleOp extends OpMode {
         rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
 
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        feedRoller.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         feedRoller.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         flywheel.setDirection(DcMotor.Direction.REVERSE);
@@ -42,8 +45,6 @@ public class NewTeleOp extends OpMode {
         telemetry.addLine("b to turn on/off the agitator");
         telemetry.addLine("x to turn on/off the feed roller");
         telemetry.addLine("y to turn off flywheel agitator and set feed roller angle");
-
-
         telemetry.update();
     }
 
@@ -51,6 +52,9 @@ public class NewTeleOp extends OpMode {
         basicMovement();
         turnOnMotors();
         flyWheel();
+
+        telemetry.addLine("Encoder Position: " + String.valueOf(feedRoller.getCurrentPosition()));
+        telemetry.addLine("Offset: " + offset);
         telemetry.update();
     }
     public double getLowestVoltage() {
@@ -102,11 +106,16 @@ public class NewTeleOp extends OpMode {
             }
         }
         if(gamepad1.yWasPressed()) {
+            float angleOff = (feedRoller.getCurrentPosition() % ticksPerRev);
+
             feedRollerPowered = false;
 
-            feedRoller.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            feedRoller.setTargetPosition(0);
+            feedRoller.setTargetPosition((int)(feedRoller.getCurrentPosition() - angleOff));
             feedRoller.setPower(1);
+            feedRoller.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            flywheel.setPower(0);
+            agitator.setPower(0);
         }
     }
     public void flyWheel() {
