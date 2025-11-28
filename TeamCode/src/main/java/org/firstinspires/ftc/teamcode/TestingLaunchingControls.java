@@ -29,8 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 /**
 * This file provides basic Telop driving for a Pushbot robot.
@@ -47,8 +47,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
 */
 
-@TeleOp(name="Steering Controls", group="Pushbot")
-public class SteeringControls extends OpMode
+@TeleOp(name="Testing Launching Controls", group="Pushbot")
+public class TestingLaunchingControls extends OpMode
 {
     /* Declare OpMode members. */
     HardwarePushbot robot       = new HardwarePushbot(); // use the class created to define a Pushbot's hardware
@@ -93,8 +93,22 @@ public class SteeringControls extends OpMode
 
 
         robot.driveTrain.drive(forward, strafe, turn);
+        //press the button to start the launcher code
+        if (gamepad1.right_bumper) //if i press the right bumper
+        {
+            //set to full power
+            robot.launcher.setFlywheelSpeed(0.75);
+            robot.launcher.setAgitatorSpeed(1);
+            robot.launcher.setShooterIntakeSpeed(0.5);
+        }
+        else if (gamepad1.left_bumper) //if i press the left bumper
+        {
+            //turn off the launching moter
+            robot.launcher.setFlywheelSpeed(0);
+            robot.launcher.setAgitatorSpeed(0);
+            robot.launcher.setShooterIntakeSpeed(0);
         }
 
 
     }
-  
+  }
