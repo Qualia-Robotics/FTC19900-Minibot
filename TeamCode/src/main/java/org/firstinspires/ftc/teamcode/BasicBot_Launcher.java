@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -22,6 +24,9 @@ public class BasicBot_Launcher
         flywheel.setDirection(DcMotor.Direction.REVERSE);
         flywheel.setPower(0);
         flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //sleep(250);
+        
 
         shooterIntake.setDirection(DcMotor.Direction.REVERSE);
         shooterIntake.setPower(0);
