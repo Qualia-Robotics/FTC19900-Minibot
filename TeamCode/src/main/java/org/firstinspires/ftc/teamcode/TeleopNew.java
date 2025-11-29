@@ -21,14 +21,11 @@ public class TeleopNew extends OpMode {
     private float  ticksPerRev = 288;
     private float offset = 0;
 
-    // --- NEW AND CHANGED VARIABLES ---
-    // Motor power runs from -1.0 to 1.0. We use 'double' for precision.
     private double feedRollerSpeed = 0.65;
-    // This is the change amount: 0.05 is 5% power change.
     private final double FEED_ROLLER_INCREMENT = 0.05;
     private final double MAX_FEED_ROLLER_SPEED = 1.0;
-    // --- END OF NEW VARIABLES ---
 
+    private boolean feedRollerActive = false;
     private boolean flyWheelPowered;
     private boolean agitatorPowered;
 
@@ -53,8 +50,11 @@ public class TeleopNew extends OpMode {
         // --- UPDATED TELEMETRY ---
         telemetry.addLine("a to turn on/off the flywheel");
         telemetry.addLine("b to turn on/off the agitator");
+        telemetry.addLine("X to start/stop the feed roller");
         telemetry.addLine("RIGHT/LEFT BUMPERS to change feed roller speed");
         telemetry.addLine("y to turn off all and reset feed roller");
+        telemetry.addLine("Different Debugging may show up, Abhi, ignore them, Eddie, you can see them if you understand them");
+
         telemetry.update();
     }
 
@@ -68,8 +68,10 @@ public class TeleopNew extends OpMode {
 
         // --- NEW TELEMETRY ---
         telemetry.addLine("Feed Roller Speed: " + String.format("%.2f", feedRollerSpeed));
+        telemetry.addLine("Feed Roller Active: " + feedRollerActive);
         telemetry.update();
     }
+
     public double getLowestVoltage() {
         double lowestValue = Double.POSITIVE_INFINITY;
         for(VoltageSensor sensor : hardwareMap.voltageSensor) {
@@ -83,6 +85,7 @@ public class TeleopNew extends OpMode {
         telemetry.addLine("Voltage: " + lowestValue + "V");
         return lowestValue;
     }
+
     public void basicMovement() {
         float x;
         float y;
@@ -110,13 +113,14 @@ public class TeleopNew extends OpMode {
             }
         }
 
-        // --- Feed Roller Speed Control (Bumpers) ---
+        // --- Feed Roller ON/OFF (X button) ---
+        if(gamepad1.xWasPressed()) {
+            feedRollerActive = !feedRollerActive;
+        }
 
-        // ** FIX APPLIED HERE: Using the camel-cased function names that align with aWasPressed() **
-        // Right bumper increases speed
+        // --- Feed Roller Speed Adjustment (Bumpers) ---
         if (gamepad1.rightBumperWasPressed()) {
             feedRollerSpeed += FEED_ROLLER_INCREMENT;
-            // Left bumper decreases speed
         } else if (gamepad1.leftBumperWasPressed()) {
             feedRollerSpeed -= FEED_ROLLER_INCREMENT;
         }
@@ -129,8 +133,11 @@ public class TeleopNew extends OpMode {
         if(gamepad1.yWasPressed()) {
             float angleOff = (feedRoller.getCurrentPosition() % ticksPerRev);
 
-            feedRollerSpeed = 0.0; // Reset our speed variable to 0
+            // Turn off continuous roller control
+            feedRollerActive = false;
+            feedRollerSpeed = 0.0;
 
+            // Start RUN_TO_POSITION to reset angle
             feedRoller.setTargetPosition((int)(feedRoller.getCurrentPosition() - angleOff));
             feedRoller.setPower(1.0);
             feedRoller.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -141,10 +148,15 @@ public class TeleopNew extends OpMode {
 
         // --- Apply Power to Feed Roller ---
         if (!feedRoller.isBusy()) {
-            // If the motor is NOT busy running to a position...
-            // ...set it to the speed we chose with the bumpers.
             feedRoller.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            feedRoller.setPower(feedRollerSpeed);
+
+            if (feedRollerActive) {
+                // If the roller is active, set it to the adjusted speed
+                feedRoller.setPower(feedRollerSpeed);
+            } else {
+                // If not active, stop it
+                feedRoller.setPower(0);
+            }
         }
     }
 
