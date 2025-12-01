@@ -1,35 +1,35 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.robot.Poses.blueLowLeavePose;
-import static org.firstinspires.ftc.teamcode.robot.Poses.blueShootingPose;
-import static org.firstinspires.ftc.teamcode.robot.Poses.redLowLeavePose;
-import static org.firstinspires.ftc.teamcode.robot.Poses.redShootingPose;
-import static org.firstinspires.ftc.teamcode.robot.Poses.redTopLeavePose;
-
 import com.bylazar.telemetry.JoinedTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.robot.Poses;
 import org.firstinspires.ftc.teamcode.robot.RobotBaseAutonomous;
 
 /**
  * Based on https://pedropathing.com/docs/pathing/examples/auto
  */
 
-@Autonomous
-public class AutonomousOpMode extends OpMode {
+public abstract class AutonomousOpMode extends OpMode {
+
+    protected AutonomousOpMode() {}
+    protected AutonomousOpMode(Alliance alliance) {
+        this.alliance = alliance;
+    }
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private RobotBaseAutonomous robotBase;
+
+    private Alliance alliance = Alliance.RED;
 
     private PathState pathState;
 
@@ -42,6 +42,8 @@ public class AutonomousOpMode extends OpMode {
     private static ElapsedTime stopWatch = new ElapsedTime();
 
     private void buildPaths() {
+
+        Poses.AlliancePoses poses = Poses.forAlliance(alliance);
         // TODO: build our pedro paths here
         // TODO - these hit and run paths are using OLD shooting positions in front the goals. Need to change based on updated shooter mechanism
 //        redHitAndRun = follower.pathBuilder()
@@ -130,6 +132,7 @@ public class AutonomousOpMode extends OpMode {
 
         robotBase = RobotBaseAutonomous.getInstance(hardwareMap, telemetry);
 
+        joinedTelemetry.addData("Alliance", alliance.toString());
         joinedTelemetry.addData("Status", "initialized");
         joinedTelemetry.update();
     }
