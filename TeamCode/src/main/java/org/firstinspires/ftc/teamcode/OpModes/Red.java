@@ -127,7 +127,7 @@ public class Red extends OpMode {
                     + 0.0856  * Math.pow(ty, 2)
                     - 1.46    * ty
                     + 36.7;
-            double rpm = 27.78 * distance + 2277;
+            double rpm = 27.78 * distance + 2477 ;
             rpm = Math.max(3000, Math.min(rpm, 5000));
             targetRPM = rpm;
         }
