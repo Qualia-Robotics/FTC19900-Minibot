@@ -48,50 +48,50 @@ public class turretSubsystem {
         // Set motor behavior ----------------------------------------------
         null_motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
     }
-        // Manual Aiming
-        public void manualAiming(double targetHorizontalPosition, double targetVerticalPosition){
-            null_motor.setPower(targetHorizontalPosition);
-            null_servo.setPosition(targetVerticalPosition);
-        }
+    // Manual Aiming
+    public void manualAiming(double targetHorizontalPosition, double targetVerticalPosition){
+        null_motor.setPower(targetHorizontalPosition);
+        null_servo.setPosition(targetVerticalPosition);
+    }
 
-        // Look For Game Objects
-        public void lookForGameObjects() {
-            if (busy) {
-                return;
+    // Look For Game Objects
+    public void lookForGameObjects() {
+        if (busy) {
+            return;
+        }
+        state = State.AUTO;
+        busy = true;
+
+        null_motor.setTargetPositionTolerance(horizontalTolerance);
+        null_motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+
+        currentHorizontalPosition = null_motor.getCurrentPosition();
+        currentVerticalPosition = null_servo.getPosition();
+
+
+        targetHorizontalPosition = 0;
+        targetVerticalPosition = 0;
+        if (targetHorizontalPosition > 0){
+            while (targetHorizontalPosition != currentHorizontalPosition) {
+                null_motor.setPower(0.5);
             }
-            state = State.AUTO;
-            busy = true;
-
-            null_motor.setTargetPositionTolerance(horizontalTolerance);
-            null_motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-            currentHorizontalPosition = null_motor.getCurrentPosition();
-            currentVerticalPosition = null_servo.getPosition();
-
-
-            targetHorizontalPosition = 0;
-            targetVerticalPosition = 0;
-            if (targetHorizontalPosition > 0){
-                while (targetHorizontalPosition != currentHorizontalPosition) {
-                    null_motor.setPower(0.5);
-                }
-            } else {
-                while (targetHorizontalPosition != currentHorizontalPosition) {
-                    null_motor.setPower(-0.5);
-                }
+        } else {
+            while (targetHorizontalPosition != currentHorizontalPosition) {
+                null_motor.setPower(-0.5);
             }
-            null_servo.setPosition(targetVerticalPosition);
         }
+        null_servo.setPosition(targetVerticalPosition);
+    }
 
 
-        public void addTelemetry (Telemetry telemetry){
-            telemetry.addLine("----- Turret -----");
-            telemetry.addData("Turret State = ", state);
-            telemetry.addData("Turret Horizontal Position = ", currentHorizontalPosition);
-            telemetry.addData("Turret Vertical Position = ", currentVerticalPosition);
+    public void addTelemetry (Telemetry telemetry){
+        telemetry.addLine("----- Turret -----");
+        telemetry.addData("Turret State = ", state);
+        telemetry.addData("Turret Horizontal Position = ", currentHorizontalPosition);
+        telemetry.addData("Turret Vertical Position = ", currentVerticalPosition);
 
-
-        }
 
     }
+
+}
 
