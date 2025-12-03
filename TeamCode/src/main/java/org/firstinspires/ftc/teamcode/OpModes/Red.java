@@ -123,14 +123,12 @@ public class Red extends OpMode {
         if (llResult != null && llResult.isValid()) {
             Pose3D botpose = llResult.getBotpose_MT2();
             double ty = llResult.getTy();
-            distance = -0.00367 * Math.pow(ty, 3)
-                    + 0.0842  * Math.pow(ty, 2)
-                    - 1.56    * ty
-                    + 37.3;
-            double rpm = 27.78 * distance + 2577;
-            rpm = Math.max(3000, Math.min(rpm, 5000));
-            targetRPM = rpm;
-        }
+            distance = ((17.44)/(Math.tan(((Math.PI)/180)*(ty + 25.11))));
+            distance = Math.max(14.8, Math.min(distance, 130));
+//            double rpm = 27.78 * distance + 2577;
+//            rpm = Math.max(3000, Math.min(rpm, 5000));
+//            targetRPM = rpm;
+        }7
         telemetry.addData("Ta", llResult.getTa());
         telemetry.addData("Tx", llResult.getTx());
         telemetry.addData("Ty", llResult.getTy());
