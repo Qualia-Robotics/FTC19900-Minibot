@@ -76,7 +76,7 @@ public abstract class AutonomousOpMode extends OpMode {
                 .addPoseCallback(poses.get(Poses.NamedPose.INTAKE_ROW_3_START), new Runnable() {
                     @Override
                     public void run() {
-                        robotBase.getIntake().loadBallToShooter(telemetry);
+                        robotBase.getIntake().loadBallToShooter(telemetryMirror);
                     }
                 }, 0.5)
                 .addPath(new BezierLine(poses.get(Poses.NamedPose.INTAKE_ROW_3_START),
@@ -84,7 +84,7 @@ public abstract class AutonomousOpMode extends OpMode {
                 .addPoseCallback(poses.get(Poses.NamedPose.INTAKE_ROW_3_END), new Runnable() {
                     @Override
                     public void run() {
-                        robotBase.getIntake().stop(telemetry);
+                        robotBase.getIntake().stop(telemetryMirror);
                     }
                 }, 0.5)
                 .setConstantHeadingInterpolation(poses.get(Poses.NamedPose.STARTING_TOP_1).getHeading())
@@ -168,7 +168,7 @@ public abstract class AutonomousOpMode extends OpMode {
 
     @Override
     public void stop() {
-        robotBase.stop(telemetry);
+        robotBase.stop(telemetryMirror);
     }
 
     public void drawOnlyCurrent() {
@@ -197,21 +197,21 @@ public abstract class AutonomousOpMode extends OpMode {
                 {
                     if (!follower.isBusy()) {
                         //follower.followPath(path1);
-                        robotBase.getShooter().startFlywheel(telemetry, -0.825);
+                        robotBase.getShooter().startFlywheel(telemetryMirror, -0.825);
 
 
                         if (pathTimer.getElapsedTime() == 500 && !firstFired) {
                             firstFired = true;
-                            robotBase.getShooter().fire(telemetry);
+                            robotBase.getShooter().fire(telemetryMirror);
                         }
                         if (pathTimer.getElapsedTime() == 1000 && !secondFired) {
                             secondFired = true;
-                            robotBase.getShooter().fire(telemetry);
+                            robotBase.getShooter().fire(telemetryMirror);
                         }
                         if (pathTimer.getElapsedTime() == 1500 && !thirdFired) {
                             thirdFired = true;
-                            robotBase.getShooter().fire(telemetry);
-                            robotBase.getShooter().stop(telemetry);
+                            robotBase.getShooter().fire(telemetryMirror);
+                            robotBase.getShooter().stop(telemetryMirror);
                         }
 
 
