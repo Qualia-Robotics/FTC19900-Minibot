@@ -158,8 +158,10 @@ public abstract class AutonomousOpMode extends OpMode {
 
         robotBase = RobotBaseAutonomous.getInstance(hardwareMap, telemetry);
 
-        telemetryMirror.addData("Status", "initialized");
+        telemetryMirror.addData(ALLIANCE, alliance.name());
+        joinedTelemetry.addData(AUTONOMOUS_OP_MODE, "started");
         telemetryMirror.update();
+        follower.update();
     }
 
     /**
@@ -168,21 +170,6 @@ public abstract class AutonomousOpMode extends OpMode {
 
     @Override
     public void stop() {
-        robotBase.stop(telemetryMirror);
-    }
-
-    public void drawOnlyCurrent() {
-        try {
-            Drawing.drawRobot(follower.getPose());
-            Drawing.sendPacket();
-        } catch (Exception e) {
-            // TODO: we don't want this to cause a runtime exception!!
-            throw new RuntimeException("Drawing failed " + e);
-        }
-    }
-
-    public void draw() {
-        Drawing.drawDebug(follower);
     }
 
     /**
