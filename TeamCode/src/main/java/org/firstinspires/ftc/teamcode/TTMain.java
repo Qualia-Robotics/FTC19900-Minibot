@@ -116,14 +116,14 @@ public class TTMain extends LinearOpMode {
 
          if (gamepad2.dpad_left) {
              index.setPower(-1);
-             rotate.setPower(-1);
-             rotate2.setPower(1);
+             rotate.setPower(1);
+             rotate2.setPower(-1);
          } else if (gamepad2.dpad_right) {
              index.setPower(1);
 
          } else if (gamepad2.dpad_down) {
-             rotate.setPower(1);
-             rotate2.setPower(-1);
+             rotate.setPower(-1);
+             rotate2.setPower(1);
 
          }  else {
              index.setPower(0);

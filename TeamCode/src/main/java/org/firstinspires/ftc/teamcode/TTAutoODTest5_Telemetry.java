@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * monitoring
  */
 @Autonomous(name = "Test5: Full Auto + Telemetry", group = "Tests")
+@Disabled
 public class TTAutoODTest5_Telemetry extends LinearOpMode {
     private DcMotor frontleft;
     private DcMotor frontright;
@@ -39,7 +41,7 @@ public class TTAutoODTest5_Telemetry extends LinearOpMode {
         rotate = hardwareMap.get(CRServo.class, "rotate");
         rotate2 = hardwareMap.get(CRServo.class, "rotate2");
 
-        odometry = new SimplifiedOdometryRobotCustom(this, index, leftlaunch, rightlaunch);
+        odometry = new SimplifiedOdometryRobotCustom(this, index, rightlaunch);
 
         // Set motor directions
         backright.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -122,8 +124,10 @@ public class TTAutoODTest5_Telemetry extends LinearOpMode {
         index.setPower(TTAutoConstants.INDEX_SHOOT_POWER);
         rotate.setPower(TTAutoConstants.ROTATE_SERVO_POWER);
         rotate2.setPower(TTAutoConstants.ROTATE2_SERVO_POWER);
-        sleep(TTAutoConstants.SHOOTING_DURATION);
-
+        sleep(TTAutoConstants.SHOOTING_DURATION1);
+        index.setPower(TTAutoConstants.INDEX_SHOOT_POWER2);
+        sleep(TTAutoConstants.SHOOTING_DURATION2);
+        // Stop all mechanisms
         leftlaunch.setPower(0);
         rightlaunch.setPower(0);
         index.setPower(0);

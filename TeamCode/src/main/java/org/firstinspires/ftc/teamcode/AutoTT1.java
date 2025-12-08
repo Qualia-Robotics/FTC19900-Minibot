@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Autonomous(name="AutoTT1.java", group = "Fall2025")
-//@Disabled
+@Disabled
 public class AutoTT1 extends LinearOpMode {
     private DcMotor frontleft = null;  //  Used to control the left front drive wheel
     private DcMotor frontright = null;  //  Used to control the right front drive wheel

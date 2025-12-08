@@ -94,7 +94,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Autonomous(name="Fall2025 Omni Drive To AprilTag", group = "Fall2025")
-//@Disabled
+@Disabled
 public class S2025RobotAutoDriveToAprilTagOmni extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.

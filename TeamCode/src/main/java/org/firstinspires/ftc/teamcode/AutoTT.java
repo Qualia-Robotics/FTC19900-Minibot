@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -92,7 +93,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Autonomous(name="AutoTT", group = "Fall2025")
-//@Disabled
+@Disabled
 public class AutoTT extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.

@@ -7,6 +7,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -23,7 +24,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="Human Autonomous", group = "AUTO")
-//@Disabled
+@Disabled
 public class Human_Auto extends LinearOpMode {
     // get an instance of the "Robot" class.
    // private SimplifiedOdometryRobot robot = new SimplifiedOdometryRobot(this);

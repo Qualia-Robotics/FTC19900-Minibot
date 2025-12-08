@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Tests strafing left and right with the three different distances
  */
 @Autonomous(name = "Test3: Strafe Left/Right", group = "Tests")
+@Disabled
 public class TTAutoODTest3_Strafe extends LinearOpMode {
     private DcMotor frontleft;
     private DcMotor frontright;
@@ -37,7 +39,7 @@ public class TTAutoODTest3_Strafe extends LinearOpMode {
         rotate = hardwareMap.get(CRServo.class, "rotate");
         rotate2 = hardwareMap.get(CRServo.class, "rotate2");
 
-        odometry = new SimplifiedOdometryRobotCustom(this, index, leftlaunch, rightlaunch);
+        odometry = new SimplifiedOdometryRobotCustom(this, index, rightlaunch);
 
         // Set motor directions
         backright.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -55,26 +57,23 @@ public class TTAutoODTest3_Strafe extends LinearOpMode {
         odometry.initialize(true);
 
         while (opModeIsActive()) {
-            double[] strafeDistances = TTAutoConstants.STRAFE_DISTANCES;
 
-            for (int i = 0; i < strafeDistances.length; i++) {
-                double distance = strafeDistances[i];
 
-                telemetry.addData("Test", "Strafing left %.0f inches", distance);
+                telemetry.addData("Test", "Strafing left %.0f inches");
                 telemetry.update();
 
                 // Strafe left
-                odometry.strafe(-distance, TTAutoConstants.DRIVE_POWER, 0);
+                odometry.strafe(-32, TTAutoConstants.DRIVE_POWER, 0);
                 sleep(2000);
 
-                telemetry.addData("Test", "Strafing right %.0f inches", distance);
+                telemetry.addData("Test", "Strafing right %.0f inches");
                 telemetry.update();
 
                 // Strafe right (return)
-                odometry.strafe(distance, TTAutoConstants.DRIVE_POWER, 0);
+                odometry.strafe(32, TTAutoConstants.DRIVE_POWER, 0);
                 sleep(2000);
 
-                telemetry.addData("Complete", "Distance %.0f test done", distance);
+                telemetry.addData("Complete", "Distance %.0f test done");
                 telemetry.addData("Strafe Position", "%.2f inches", odometry.strafeDistance);
                 telemetry.update();
                 sleep(2000);
@@ -83,7 +82,6 @@ public class TTAutoODTest3_Strafe extends LinearOpMode {
             telemetry.addData("Status", "All strafe tests complete!");
             telemetry.update();
             sleep(10000);
-            break;
         }
     }
-}
+

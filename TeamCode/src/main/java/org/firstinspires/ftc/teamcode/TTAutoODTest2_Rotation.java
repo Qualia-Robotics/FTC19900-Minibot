@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Tests the 315 degree rotations (both counterclockwise and clockwise)
  */
 @Autonomous(name = "Test2: Rotation 315deg", group = "Tests")
+@Disabled
 public class TTAutoODTest2_Rotation extends LinearOpMode {
     private DcMotor frontleft;
     private DcMotor frontright;
@@ -37,7 +39,7 @@ public class TTAutoODTest2_Rotation extends LinearOpMode {
         rotate = hardwareMap.get(CRServo.class, "rotate");
         rotate2 = hardwareMap.get(CRServo.class, "rotate2");
 
-        odometry = new SimplifiedOdometryRobotCustom(this, index, leftlaunch, rightlaunch);
+        odometry = new SimplifiedOdometryRobotCustom(this, index,rightlaunch);
 
         // Set motor directions
         backright.setDirection(DcMotorSimple.Direction.FORWARD);

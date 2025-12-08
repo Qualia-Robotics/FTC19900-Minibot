@@ -1,17 +1,14 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.onbotjava.handlers.admin.ResetOnBotJava;
-
-@Autonomous(name = "TTAutoOD.java", group = "Fall2025")
- @Disabled
-public class TTAutoOD extends LinearOpMode {
+@Autonomous(name = "TTAutoODR.java", group = "Fall2025")
+// @Disable
+public class TTAutoODR extends LinearOpMode {
   // private SimplifiedOdometryRobot robot = new SimplifiedOdometryRobot(this);
   private DcMotor frontleft; // Used to control the left front drive wheel
   private DcMotor frontright; // Used to control the right front drive wheel
@@ -25,9 +22,9 @@ public class TTAutoOD extends LinearOpMode {
 
   private SimplifiedOdometryRobotCustom odometry;
 
+
   @Override
   public void runOpMode() {
-
     frontleft = hardwareMap.get(DcMotor.class, "frontleft");
     frontright = hardwareMap.get(DcMotor.class, "frontright");
     backleft = hardwareMap.get(DcMotor.class, "backleft");
@@ -50,53 +47,78 @@ public class TTAutoOD extends LinearOpMode {
     odometry.initialize(true);
 
     while (opModeIsActive()) {
-      // Step 1: Back up to shooting position
       launcherSpoll();
       odometry.drive(-TTAutoConstants.BACKUP_TO_SHOOT, TTAutoConstants.DRIVE_POWER, 0);
 
       // Step 2: Shoot pre-loaded balls
       shootBalls();
+      frontleft.setPower(0);
+      backleft.setPower(0);
+      frontright.setPower(0);
+      backright.setPower(0);
+      sleep(10);
+
+
 
       // Loop through 3 ball groups with different strafe distances
-      for (int i = 0; i < TTAutoConstants.STRAFE_DISTANCES.length; i++) {
-        double strafeDistance = TTAutoConstants.STRAFE_DISTANCES[i];
 
-        // Step 3: Rotate counterclockwise to collection angle
-        rotateRelative(TTAutoConstants.ROTATE_TO_COLLECT, TTAutoConstants.ROTATE_POWER);
+      // Step 3: Rotate counterclockwise to collection angle
+      rotateRelative(TTAutoConstants.ROTATE_TO_COLLECT, TTAutoConstants.ROTATE_POWER);
 
-        // Step 4: Strafe left to ball group
-        odometry.strafe(-strafeDistance, TTAutoConstants.DRIVE_POWER, 0);
+      // Step 4: Strafe left to ball group
+      odometry.strafe(-TTAutoConstants.STRAFE_GROUP_1, TTAutoConstants.DRIVE_POWER, 0);
 
-        // Step 5: Drive forward while collecting balls
-        pickupBalls();
-        driveAndCollect(TTAutoConstants.DRIVE_TO_COLLECT, TTAutoConstants.DRIVE_POWER_COLLECT);
-        // Step 6: Back up to shooting lane
-        odometry.drive(-TTAutoConstants.DRIVE_TO_COLLECT, TTAutoConstants.DRIVE_POWER, 0);
-        stoppickupBalls();
-        // Step 7: Strafe right (return to shooting position)
-        odometry.strafe(strafeDistance, TTAutoConstants.DRIVE_POWER, 0);
+      // Step 5: Drive forward while collecting balls
+      pickupBalls();
+      driveAndCollect(TTAutoConstants.COLLECT_GROUP_1, TTAutoConstants.DRIVE_POWER_COLLECT);
+      // Step 6: Back up to shooting lane
+      odometry.drive(-TTAutoConstants.COLLECT_GROUP_1, TTAutoConstants.DRIVE_POWER, 0);
+      // Step 7: Strafe right (return to shooting position)
+      odometry.strafe(TTAutoConstants.STRAFE_GROUP_1, TTAutoConstants.DRIVE_POWER, 0);
+      stoppickupBalls();
+      // Step 8: Rotate clockwise to shooting angle
+      ballDrop();
+      launcherSpoll();
+      rotateRelative(TTAutoConstants.ROTATE_TO_SHOOT, TTAutoConstants.ROTATE_POWER);
+      sleep(10);
 
-        // Step 8: Rotate clockwise to shooting angle
-        ballDrop();
-        launcherSpoll();
-        rotateRelative(TTAutoConstants.ROTATE_TO_SHOOT, TTAutoConstants.ROTATE_POWER);
+      // Step 9: Shoot collected balls
+      shootBalls();
 
+      rotateRelative(TTAutoConstants.ROTATE_TO_COLLECT2, TTAutoConstants.ROTATE_POWER);
 
-        // Step 9: Shoot collected balls
-        shootBalls();
-      }
+      // Step 4: Strafe left to ball group
+      odometry.strafe(-TTAutoConstants.STRAFE_GROUP_2, TTAutoConstants.DRIVE_POWER, 0);
 
-      // Exit autonomous loop
+      // Step 5: Drive forward while collecting balls
+      pickupBalls();
+      driveAndCollect(TTAutoConstants.COLLECT_GROUP_2, TTAutoConstants.DRIVE_POWER_COLLECT);
+      // Step 6: Back up to shooting lane
+      odometry.drive(-TTAutoConstants.COLLECT_GROUP_2, TTAutoConstants.DRIVE_POWER, 0);
+      // Step 7: Strafe right (return to shooting position)
+      odometry.strafe(TTAutoConstants.STRAFE_GROUP_2, TTAutoConstants.DRIVE_POWER, 0);
+      stoppickupBalls();
+      // Step 8: Rotate clockwise to shooting angle
+      ballDrop();
+      launcherSpoll();
+
+      rotateRelative(TTAutoConstants.ROTATE_TO_SHOOT2, TTAutoConstants.ROTATE_POWER);
+      // Step 9: Shoot collected balls
+      finalshootBalls();
+      odometry.strafe(TTAutoConstants.STRAFE_LEAVE,TTAutoConstants.DRIVE_POWER,0);
       break;
     }
+    // Exit autonomous loop
   }
+
+
 
   // Helper method to shoot balls
   private void ballDrop(){
     index.setPower(TTAutoConstants.INDEX_DROP);
     rotate.setPower(TTAutoConstants.ROTATE_SERVO_POWER);
     rotate2.setPower(TTAutoConstants.ROTATE2_SERVO_POWER);
-    sleep(300);
+    sleep(200);
     index.setPower(0);
   }
   private void stoppickupBalls(){
@@ -110,20 +132,29 @@ public class TTAutoOD extends LinearOpMode {
   private void launcherSpoll(){
     leftlaunch.setPower(TTAutoConstants.LEFT_LAUNCH_POWER);
     rightlaunch.setPower(TTAutoConstants.RIGHT_LAUNCH_POWER);
+    sleep(TTAutoConstants.LAUNCHER_SPINUP_TIME);
   }
   private void shootBalls() {
     index.setPower(TTAutoConstants.INDEX_SHOOT_POWER);
     rotate.setPower(TTAutoConstants.ROTATE_SERVO_POWER);
     rotate2.setPower(TTAutoConstants.ROTATE2_SERVO_POWER);
     sleep(TTAutoConstants.SHOOTING_DURATION1);
-    index.setPower(TTAutoConstants.INDEX_SHOOT_POWER2);
-    sleep(TTAutoConstants.SHOOTING_DURATION2);
     // Stop all mechanisms
     leftlaunch.setPower(0);
     rightlaunch.setPower(0);
     index.setPower(0);
     rotate.setPower(0);
     rotate2.setPower(0);
+  }
+  private void finalshootBalls() {
+    index.setPower(TTAutoConstants.INDEX_SHOOT_POWER);
+    rotate.setPower(TTAutoConstants.ROTATE_SERVO_POWER);
+    rotate2.setPower(TTAutoConstants.ROTATE2_SERVO_POWER);
+    sleep(1700);
+    index.setPower(0);
+    rotate.setPower(0);
+    rotate2.setPower(0);
+    sleep(1000000000);
   }
 
 
