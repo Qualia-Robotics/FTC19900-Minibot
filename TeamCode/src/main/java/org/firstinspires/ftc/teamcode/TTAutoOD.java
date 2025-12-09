@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.onbotjava.handlers.admin.ResetOnBotJava;
 
 @Autonomous(name = "TTAutoOD.java", group = "Fall2025")
- @Disabled
+// @Disable
 public class TTAutoOD extends LinearOpMode {
   // private SimplifiedOdometryRobot robot = new SimplifiedOdometryRobot(this);
   private DcMotor frontleft; // Used to control the left front drive wheel
@@ -38,7 +38,7 @@ public class TTAutoOD extends LinearOpMode {
     rotate = hardwareMap.get(CRServo.class, "rotate");
     rotate2 = hardwareMap.get(CRServo.class, "rotate2");
 
-    odometry = new SimplifiedOdometryRobotCustom(this, index, rightlaunch);
+    odometry = new SimplifiedOdometryRobotCustom(this, index, rightlaunch); // leftlaunch was removed from parameters
 
     backright.setDirection(DcMotorSimple.Direction.FORWARD);
     backleft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -51,7 +51,6 @@ public class TTAutoOD extends LinearOpMode {
 
     while (opModeIsActive()) {
       // Step 1: Back up to shooting position
-      launcherSpoll();
       odometry.drive(-TTAutoConstants.BACKUP_TO_SHOOT, TTAutoConstants.DRIVE_POWER, 0);
 
       // Step 2: Shoot pre-loaded balls
@@ -68,19 +67,16 @@ public class TTAutoOD extends LinearOpMode {
         odometry.strafe(-strafeDistance, TTAutoConstants.DRIVE_POWER, 0);
 
         // Step 5: Drive forward while collecting balls
-        pickupBalls();
-        driveAndCollect(TTAutoConstants.DRIVE_TO_COLLECT, TTAutoConstants.DRIVE_POWER_COLLECT);
+        driveAndCollect(TTAutoConstants.DRIVE_TO_COLLECT, TTAutoConstants.DRIVE_POWER);
+
         // Step 6: Back up to shooting lane
         odometry.drive(-TTAutoConstants.DRIVE_TO_COLLECT, TTAutoConstants.DRIVE_POWER, 0);
-        stoppickupBalls();
+
         // Step 7: Strafe right (return to shooting position)
         odometry.strafe(strafeDistance, TTAutoConstants.DRIVE_POWER, 0);
 
         // Step 8: Rotate clockwise to shooting angle
-        ballDrop();
-        launcherSpoll();
         rotateRelative(TTAutoConstants.ROTATE_TO_SHOOT, TTAutoConstants.ROTATE_POWER);
-
 
         // Step 9: Shoot collected balls
         shootBalls();
@@ -92,32 +88,15 @@ public class TTAutoOD extends LinearOpMode {
   }
 
   // Helper method to shoot balls
-  private void ballDrop(){
-    index.setPower(TTAutoConstants.INDEX_DROP);
-    rotate.setPower(TTAutoConstants.ROTATE_SERVO_POWER);
-    rotate2.setPower(TTAutoConstants.ROTATE2_SERVO_POWER);
-    sleep(300);
-    index.setPower(0);
-  }
-  private void stoppickupBalls(){
-    rotate.setPower(0);
-    rotate2.setPower(0);
-  }
-  private void pickupBalls(){
-    rotate.setPower(TTAutoConstants.ROTATE_SERVO_POWER);
-    rotate2.setPower(TTAutoConstants.ROTATE2_SERVO_POWER);
-  }
-  private void launcherSpoll(){
+  private void shootBalls() {
     leftlaunch.setPower(TTAutoConstants.LEFT_LAUNCH_POWER);
     rightlaunch.setPower(TTAutoConstants.RIGHT_LAUNCH_POWER);
-  }
-  private void shootBalls() {
+    sleep(TTAutoConstants.LAUNCHER_SPINUP_TIME);
     index.setPower(TTAutoConstants.INDEX_SHOOT_POWER);
     rotate.setPower(TTAutoConstants.ROTATE_SERVO_POWER);
     rotate2.setPower(TTAutoConstants.ROTATE2_SERVO_POWER);
-    sleep(TTAutoConstants.SHOOTING_DURATION1);
-    index.setPower(TTAutoConstants.INDEX_SHOOT_POWER2);
-    sleep(TTAutoConstants.SHOOTING_DURATION2);
+    sleep(TTAutoConstants.SHOOTING_DURATION);
+
     // Stop all mechanisms
     leftlaunch.setPower(0);
     rightlaunch.setPower(0);
@@ -125,7 +104,6 @@ public class TTAutoOD extends LinearOpMode {
     rotate.setPower(0);
     rotate2.setPower(0);
   }
-
 
   // Helper method to drive forward and collect balls
   private void driveAndCollect(double inches, double power) {
