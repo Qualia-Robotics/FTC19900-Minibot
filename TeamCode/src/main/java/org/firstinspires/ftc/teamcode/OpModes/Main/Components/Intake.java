@@ -13,7 +13,7 @@ public class Intake {
 
     public void initialize(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
-        intakeServo = hardwareMap.get(CRServo.class, "ServoIntake");
+        intakeServo = hardwareMap.get(CRServo.class, "intakeServo");
         
         if (intakeServo != null) {
             intakeServo.setPower(0.0);
