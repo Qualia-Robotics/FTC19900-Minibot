@@ -30,13 +30,12 @@ public class Constants {
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.08,0,0.001,0.6,0.02))
             .centripetalScaling(0.0005);
 
-
 // breaking start is 1.0
 // breaking strength is 1.2
 
 
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1.2, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)

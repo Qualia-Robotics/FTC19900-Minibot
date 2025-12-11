@@ -182,7 +182,8 @@ public class AutonomousMain {
         
         // Build path chains for each section to allow actions between segments
         // Section 1: Segments 1-2 (align + first shooting)
-        PathChain section1 = buildRedRightPathSection1();
+        PathChain section1 = buildRedRightPathSection1().setGlobalDeceleration(1.2);
+
         followPathChain(section1);
         
         // Action after segment 2: Shoot 3 pre-loaded balls
