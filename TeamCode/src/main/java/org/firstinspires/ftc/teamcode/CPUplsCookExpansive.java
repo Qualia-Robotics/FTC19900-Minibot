@@ -165,6 +165,7 @@ public class CPUplsCookExpansive extends LinearOpMode {
         intakeToShooter = hardwareMap.get(CRServo.class, "its");
         intakeToShooter2 = hardwareMap.get(CRServo.class, "its2");
 
+
         // --- Odometry encoder setup ---
         telemetry.addData("Before Reset - Left", intake.getCurrentPosition());
         telemetry.addData("Before Reset - Right", intake2.getCurrentPosition());
@@ -530,7 +531,7 @@ public class CPUplsCookExpansive extends LinearOpMode {
         else{
             intakeToShooter.setPower(0);
             intakeToShooter2.setPower(0);
-            shooter.setPower(0);
+            shooter.setPower(0.24);
         }
     }
 

@@ -22,7 +22,7 @@ public class SimpleRoadRunnerAuto extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         // CRITICAL: If you have ThreeDeadWheelLocalizer, uncomment this:
-        // drive.localizer = new ThreeDeadWheelLocalizer(hardwareMap, drive.lazyImu.get());
+//         drive.localizer = new ThreeDeadWheelLocalizer(hardwareMap, drive.lazyImu.get());
 
         // IMPORTANT: Add telemetry to debug localization
         while (opModeInInit()) {
