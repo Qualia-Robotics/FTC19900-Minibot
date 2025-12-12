@@ -183,8 +183,8 @@ public class Spindexer {
         indexColors.put(flag, "none");
 
         try {
-            // Pause execution for 1.3 seconds (1500 milliseconds)
-            Thread.sleep(1300);
+            // Further reduced delay for servo movement (was 400ms, now 200ms)
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             // Handle the InterruptedException if the thread is interrupted while sleeping
             e.printStackTrace();
@@ -192,8 +192,8 @@ public class Spindexer {
 
         kickerServo.setPosition(KICKER_FLICK_POSITION); //Flick up kicker servo
         try {
-            // Pause execution for 1 seconds (1000 milliseconds)
-            Thread.sleep(1500);
+            // Further reduced delay for kicker flick (was 600ms, now 400ms)
+            Thread.sleep(400);
         } catch (InterruptedException e) {
             // Handle the InterruptedException if the thread is interrupted while sleeping
             e.printStackTrace();
@@ -201,8 +201,8 @@ public class Spindexer {
         kickerServo.setPosition(KICKER_RESET_POSITION);
 
         try {
-            // Pause execution for 1 seconds (1000 milliseconds)
-            Thread.sleep(1300);
+            // Further reduced delay for kicker reset (was 400ms, now 200ms)
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             // Handle the InterruptedException if the thread is interrupted while sleeping
             e.printStackTrace();
@@ -287,21 +287,21 @@ public class Spindexer {
     private void performKickerSequence() {
         // Faster kicker sequence for rapid fire mode
         try {
-            Thread.sleep(1000);  // Reduced from 1300
+            Thread.sleep(200);  // Further reduced from 400ms
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         
         kickerServo.setPosition(KICKER_FLICK_POSITION);
         try {
-            Thread.sleep(1200);  // Reduced from 1500
+            Thread.sleep(400);  // Further reduced from 600ms
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         kickerServo.setPosition(KICKER_RESET_POSITION);
         
         try {
-            Thread.sleep(1000);  // Reduced from 1300
+            Thread.sleep(200);  // Further reduced from 400ms
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

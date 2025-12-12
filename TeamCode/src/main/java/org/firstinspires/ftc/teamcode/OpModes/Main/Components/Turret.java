@@ -56,6 +56,10 @@ public class Turret {
 
     // Servo direction multiplier
     private double servoDirection = 1.0;
+    
+    // Lock flag to prevent update() from running when turret is locked
+    private boolean isLocked = false;
+    private double lockedPosition = 0.5;
 
     public void initialize(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -72,6 +76,12 @@ public class Turret {
     }
 
     public boolean update() {
+        // If turret is locked, skip all update logic and just maintain position
+        if (isLocked) {
+            turretServo.setPosition(lockedPosition);
+            return true;
+        }
+        
         if (limelight == null || !limelight.isConnected()) {
             telemetry.addLine("❌ Limelight not connected");
             telemetry.update();
@@ -382,13 +392,23 @@ public class Turret {
     
     /**
      * Set turret to a fixed position directly (bypasses scanning/alignment)
+     * Locks the turret at this position and prevents update() from changing it
      * @param position Servo position (0.0 to 1.0)
      */
     public void setPositionDirect(double position) {
         // Clamp position to valid range
         position = Math.max(SERVO_MIN, Math.min(SERVO_MAX, position));
         servoPos = position;
+        lockedPosition = position;
+        isLocked = true; // Lock turret to prevent update() from changing position
         turretServo.setPosition(servoPos);
+    }
+    
+    /**
+     * Unlock turret to allow update() method to control it again
+     */
+    public void unlock() {
+        isLocked = false;
     }
 }
 
