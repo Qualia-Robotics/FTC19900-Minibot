@@ -183,11 +183,11 @@ public class ShooterSubsystem {
         intakeArmServo.setPosition(0);
     }
 
-    public void startLauncher() {
+    public void startOuttake() {
         outtakeMotor.setPower(1);
     }
 
-    public void stopLauncher() {
+    public void stopOuttake() {
         outtakeMotor.setPower(0);
     }
 
