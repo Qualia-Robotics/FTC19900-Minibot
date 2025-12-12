@@ -63,12 +63,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * main robot "loop," continuously checking for conditions that allow us to move to the next step.
  */
 
-@Autonomous(name="FrontAuto12Balls", group="StarterBot")
+@Autonomous(name="AudienceAuto", group="StarterBot")
 //@Disabled
-public class FrontAuto12Balls extends OpMode
+public class SmallTriangleAuto extends OpMode
 {
 
-    final double FEED_TIME = 0.125; //The feeder servos run this long when a shot is requested.
+    final double FEED_TIME = 0.20; //The feeder servos run this long when a shot is requested.
 
     /*
      * When we control our launcher motor, we are using encoders. These allow the control system
@@ -76,8 +76,8 @@ public class FrontAuto12Balls extends OpMode
      * velocity. Here we are setting the target and minimum velocity that the launcher should run
      * at. The minimum velocity is a threshold for determining when to fire.
      */
-    final double LAUNCHER_TARGET_VELOCITY = 1110;
-    final double LAUNCHER_MIN_VELOCITY = 1090;
+    final double LAUNCHER_TARGET_VELOCITY = 2125;
+    final double LAUNCHER_MIN_VELOCITY = 2000;
 
     /*
      * The number of seconds that we wait between each of our 3 shots from the launcher. This
@@ -101,9 +101,7 @@ public class FrontAuto12Balls extends OpMode
     final double ENCODER_TICKS_PER_REV = 537.7;
     final double TICKS_PER_MM = (ENCODER_TICKS_PER_REV / (WHEEL_DIAMETER_MM * Math.PI));
     final double TRACK_WIDTH_MM = 420;
-    final double BLOCKER_UP = 0;
-    final double BLOCKER_DOWN = 1;
-    final double GOAL_ANGLE = 0.6;
+
     int shotsToFire = 3; //The number of shots to fire in this auto.
 
     double robotRotationAngle = 45;
@@ -118,15 +116,14 @@ public class FrontAuto12Balls extends OpMode
     private ElapsedTime driveTimer = new ElapsedTime();
 
     // Declare OpMode members.
-    private DcMotor leftFrontDrive;
-    private DcMotor leftBackDrive;
-    private DcMotor rightFrontDrive;
-    private DcMotor rightBackDrive;
+    private DcMotor leftFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor rightBackDrive = null;
     private DcMotorEx launcher = null;
     private CRServo leftFeeder = null;
     private CRServo rightFeeder = null;
     private DcMotor intake;
-    private Servo blocker;
     private Servo angle;
 
     /*
@@ -161,17 +158,8 @@ public class FrontAuto12Balls extends OpMode
         TEST,
         LAUNCH,
         WAIT_FOR_LAUNCH,
-        DRIVING_AWAY_FROM_GOAL,
-        ROTATING,
-        ROTATE2,
-        DRIVING_OFF_LINE,
-        DRIVING2,
-        LAUNCH2,
-        WAIT_FOR_LAUNCH2,
-        DRIVING_AWAY_FROM_GOAL1,
+        DRIVING_AWAY_FROM_SMALL_TRIANGLE,
         COMPLETE,
-        DRIVING_AWAY_FROM_GOAL2,
-        ROTATE3,
     }
 
     private AutonomousState autonomousState;
@@ -216,8 +204,6 @@ public class FrontAuto12Balls extends OpMode
         launcher = hardwareMap.get(DcMotorEx.class,"launcher");
         leftFeeder = hardwareMap.get(CRServo.class, "left_feeder");
         rightFeeder = hardwareMap.get(CRServo.class, "right_feeder");
-        blocker = hardwareMap.get(Servo.class, "blocker");
-        angle = hardwareMap.get(Servo.class, "angle");
 
 
         /*
@@ -270,8 +256,6 @@ public class FrontAuto12Balls extends OpMode
          * both work to feed the ball into the robot.
          */
         leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
-        blocker.setPosition(BLOCKER_DOWN);
-
 
 
         // Tell the driver that initialization is complete.
@@ -289,7 +273,6 @@ public class FrontAuto12Balls extends OpMode
          */
         rightFeeder.setPower(0);
         leftFeeder.setPower(0);
-
 
 
         /*
@@ -311,7 +294,6 @@ public class FrontAuto12Balls extends OpMode
      */
     @Override
     public void start() {
-        intake.setPower(.5);
     }
 
     /*
@@ -328,24 +310,7 @@ public class FrontAuto12Balls extends OpMode
          * of the members of the enum for a match, since if we find the "break" line in one case,
          * we know our enum isn't reflecting a different state.
          */
-        switch (autonomousState){
-            /*case DRIVING_AWAY_FROM_GOAL1:
-
-
-                robotRotationAngle = -180;
-
-
-
-            if(rotate(ROTATE_SPEED, robotRotationAngle, AngleUnit.DEGREES,1)){
-                leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                autonomousState = AutonomousState.COMPLETE;
-            }
-            break;
-                */
-
+        switch (autonomousState) {
 
             /*
              * Since the first state of our auto is LAUNCH, this is the first "case" we encounter.
@@ -356,9 +321,7 @@ public class FrontAuto12Balls extends OpMode
              * allowing it to cycle through and continue the process of launching the first ball.
              */
             case LAUNCH:
-
-                angle.setPosition(GOAL_ANGLE);
-
+                angle.setPosition(1);
                 launch(true);
                 autonomousState = AutonomousState.WAIT_FOR_LAUNCH;
                 break;
@@ -375,9 +338,9 @@ public class FrontAuto12Balls extends OpMode
                  * state on our state machine. Otherwise, we reset the encoders on our drive motors
                  * and move onto the next state.
                  */
-                if(launch(false)) {
+                if (launch(false)) {
                     shotsToFire -= 1;
-                    if(shotsToFire > 0) {
+                    if (shotsToFire > 0) {
                         autonomousState = AutonomousState.LAUNCH;
                     } else {
                         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -385,142 +348,31 @@ public class FrontAuto12Balls extends OpMode
                         rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         launcher.setVelocity(0);
-                        intake.setPower(0.6);
-                        autonomousState = AutonomousState.DRIVING_AWAY_FROM_GOAL;
+                        autonomousState = AutonomousState.DRIVING_AWAY_FROM_SMALL_TRIANGLE;
                     }
                 }
                 break;
 
-            case DRIVING_AWAY_FROM_GOAL:
+            case DRIVING_AWAY_FROM_SMALL_TRIANGLE:
                 /*
                  * This is another function that returns a boolean. This time we return "true" if
                  * the robot has been within a tolerance of the target position for "holdSeconds."
                  * Once the function returns "true" we reset the encoders again and move on.
                  */
-                if(drive(DRIVE_SPEED*1.25, -59, DistanceUnit.INCH, 0.7)){
-//                    rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-//                    rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-//                    leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-//                    leftBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+                if (drive(DRIVE_SPEED, 6, DistanceUnit.INCH, 1)) {
                     leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    autonomousState = AutonomousState.ROTATING;
-                    intake.setPower(0);
-                }
-                break;
-
-            case ROTATING:
-                if(alliance == Alliance.BLUE){
-                    robotRotationAngle = 45;
-                    blocker.setPosition(BLOCKER_UP);
-                } else if (alliance == Alliance.RED) {
-                    robotRotationAngle = -45;
-                    blocker.setPosition(BLOCKER_UP);
-                }
-
-                if(rotate(ROTATE_SPEED*1.25, robotRotationAngle, AngleUnit.DEGREES,0.7)){
-                    leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    autonomousState = AutonomousState.DRIVING_OFF_LINE;
-                    intake.setPower(1);
-                }
-                break;
-
-            case DRIVING_OFF_LINE:
-
-                launcher.setVelocity(-100);
-
-                if(drive(DRIVE_SPEED*0.5, 52.5, DistanceUnit.INCH, 0.7)) {
-                    leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    autonomousState = AutonomousState.DRIVING2;
-                    intake.setPower(1.5);
-
-
-                }
-                break;
-
-            case DRIVING2:
-
-                if(drive(DRIVE_SPEED*1.25, -52.5, DistanceUnit.INCH, 0.7)) {
-                    leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    autonomousState = AutonomousState.ROTATE2;
-
-                }
-                break;
-
-            case ROTATE2:
-                if(alliance == Alliance.BLUE){
-                    robotRotationAngle = -40;
-                } else if (alliance == Alliance.RED) {
-                    robotRotationAngle = 40;
-                }
-                if(rotate(ROTATE_SPEED*1.25, robotRotationAngle, AngleUnit.DEGREES,0.7)){
-                    leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    autonomousState = AutonomousState.DRIVING_AWAY_FROM_GOAL1;
-                    blocker.setPosition(BLOCKER_DOWN);
-                }
-                break;
-
-            case DRIVING_AWAY_FROM_GOAL1:
-
-                if(drive(DRIVE_SPEED*2, 55, DistanceUnit.INCH, 0.9)){
-                    leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    autonomousState = AutonomousState.LAUNCH2;
-                    intake.setPower(0);
-                    shotsToFire = 3;
-                }
-                break;
-
-
-            case LAUNCH2:
-                launch(true);
-                autonomousState = AutonomousState.WAIT_FOR_LAUNCH2;
-                intake.setPower(1);
-                break;
-
-            case WAIT_FOR_LAUNCH2:
-            if(launch(false)) {
-                shotsToFire -= 1;
-                if(shotsToFire > 0) {
-                    autonomousState = AutonomousState.LAUNCH2;
-                } else {
-                    leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    launcher.setVelocity(0);
-                    autonomousState = AutonomousState.DRIVING_AWAY_FROM_GOAL2;
-                }
-            }
-            break;
-
-            case DRIVING_AWAY_FROM_GOAL2:
-
-                if(driveWithDirection(DRIVE_SPEED*2, -20, -20, DistanceUnit.INCH, 0.7)){
                     autonomousState = AutonomousState.COMPLETE;
                     intake.setPower(0);
                 }
                 break;
-
-
-
         }
+
+
+
+
 
         /*
          * Here is our telemetry that keeps us informed of what is going on in the robot. Since this
@@ -530,7 +382,6 @@ public class FrontAuto12Balls extends OpMode
          * after the last "case" that runs every loop. This means we can avoid a lot of
          * "copy-and-paste" that non-state machine autonomous routines fall into.
          */
-
         telemetry.addData("AutoState", autonomousState);
         telemetry.addData("LauncherState", launchState);
         telemetry.addData("Motor Current Positions", "leftFront (%d), rightFront (%d)",
@@ -592,63 +443,12 @@ public class FrontAuto12Balls extends OpMode
 
     /**
      * @param speed From 0-1
-     * @param rightDistance In specified unit
-     * @param forwardDistance In specified unit
+     * @param distance In specified unit
      * @param distanceUnit the unit of measurement for distance
      * @param holdSeconds the number of seconds to wait at position before returning true.
      * @return "true" if the motors are within tolerance of the target position for more than
      * holdSeconds. "false" otherwise.
      */
-    boolean driveWithDirection(double speed, double rightDistance, double forwardDistance, DistanceUnit distanceUnit, double holdSeconds) {
-        final double TOLERANCE_MM = 10;
-        /*
-         * In this function we use a DistanceUnits. This is a class that the FTC SDK implements
-         * which allows us to accept different input units depending on the user's preference.
-         * To use these, put both a double and a DistanceUnit as parameters in a function and then
-         * call distanceUnit.toMm(distance). This will return the number of mm that are equivalent
-         * to whatever distance in the unit specified. We are working in mm for this, so that's the
-         * unit we request from distanceUnit. But if we want to use inches in our function, we could
-         * use distanceUnit.toInches() instead!
-         */
-        double leftFrontPosition = (distanceUnit.toMm(rightDistance+forwardDistance) * TICKS_PER_MM * Math.sqrt(2));
-        double leftBackPosition = (distanceUnit.toMm(-rightDistance+forwardDistance) * TICKS_PER_MM * Math.sqrt(2));
-        double rightFrontPosition = (distanceUnit.toMm(-rightDistance+forwardDistance) * TICKS_PER_MM * Math.sqrt(2));
-        double rightBackPosition = (distanceUnit.toMm(rightDistance+forwardDistance) * TICKS_PER_MM * Math.sqrt(2));
-
-        leftFrontDrive.setTargetPosition((int) leftFrontPosition);
-        leftBackDrive.setTargetPosition((int) leftBackPosition);
-        rightFrontDrive.setTargetPosition((int) rightFrontPosition);
-        rightBackDrive.setTargetPosition((int) rightBackPosition);
-
-        leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        leftFrontDrive.setPower(speed);
-        leftBackDrive.setPower(speed);
-        rightFrontDrive.setPower(speed);
-        rightBackDrive.setPower(speed);
-
-        /*
-         * Here we check if we are within tolerance of our target position or not. We calculate the
-         * absolute error (distance from our setpoint regardless of if it is positive or negative)
-         * and compare that to our tolerance. If we have not reached our target yet, then we reset
-         * the driveTimer. Only after we reach the target can the timer count higher than our
-         * holdSeconds variable.
-         */
-        if(
-                Math.abs(leftFrontPosition - leftFrontDrive.getCurrentPosition()) > (TOLERANCE_MM * TICKS_PER_MM)
-                || Math.abs(leftBackPosition - leftBackDrive.getCurrentPosition()) > (TOLERANCE_MM * TICKS_PER_MM)
-                || Math.abs(rightFrontPosition - rightFrontDrive.getCurrentPosition()) > (TOLERANCE_MM * TICKS_PER_MM)
-                || Math.abs(rightBackPosition - rightBackDrive.getCurrentPosition()) > (TOLERANCE_MM * TICKS_PER_MM)
-        ){
-            driveTimer.reset();
-        }
-
-        return (driveTimer.seconds() > holdSeconds);
-    }
-
     boolean drive(double speed, double distance, DistanceUnit distanceUnit, double holdSeconds) {
         final double TOLERANCE_MM = 10;
         /*
@@ -690,6 +490,7 @@ public class FrontAuto12Balls extends OpMode
 
         return (driveTimer.seconds() > holdSeconds);
     }
+
     /**
      * @param speed From 0-1
      * @param angle the amount that the robot should rotate
@@ -742,3 +543,6 @@ public class FrontAuto12Balls extends OpMode
         return (driveTimer.seconds() > holdSeconds);
     }
 }
+
+
+
