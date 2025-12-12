@@ -31,10 +31,13 @@ public class mainTele extends LinearOpMode {
         while (opModeIsActive()) {
             robot.periodic();
 
-            // Read joystick values --------------------------------------
+            // Read joystick Values  for Gamepad 1 --------------------------------------
             double forward = -gamepad1.left_stick_y; // Forward is negative on the stick
             double strafe = gamepad1.left_stick_x;  // Strafe
             double turn = gamepad1.right_stick_x; // Rotation
+            // Read Joystick Values for Gamepad 2 ---------------------------------------
+            double horizontal = -gamepad2.right_stick_x;
+            double vertical = -gamepad2.left_stick_x * 0.02;
 
             //Change Speed ---------------------------------------------------
             if (gamepad1.b && !BPressedLast) {
@@ -45,6 +48,8 @@ public class mainTele extends LinearOpMode {
             if (gamepad2.x && !XPressedLast) {
                 robot.shooter.liftBall();
             }
+
+            robot.turret.manualAiming(horizontal, vertical);
 
             // Initiate a short shot
             if (gamepad2.y && !YPressedLast) {

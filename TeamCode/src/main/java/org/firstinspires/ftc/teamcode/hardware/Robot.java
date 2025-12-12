@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 //import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LimeLightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterController;
+import org.firstinspires.ftc.teamcode.subsystems.turretSubsystem;
 
 public class Robot {
 
@@ -13,10 +14,13 @@ public class Robot {
     //public IntakeSubsystem intake;
     public ShooterController shooter;
 
+    public turretSubsystem turret;
+
     public LimeLightSubsystem limelight;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
         // Initialize all subsystems in a controlled, predictable order
+        turret = new turretSubsystem(hardwareMap, telemetry);
         drive = new DriveSubsystem(hardwareMap);
         shooter = new ShooterController(hardwareMap);
         limelight = new LimeLightSubsystem(hardwareMap);
