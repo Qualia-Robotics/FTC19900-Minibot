@@ -1,17 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import android.util.Size;
-
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.opencv.ImageRegion;
-import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
 
-public class LimeLightSubsystem {
+public class VisionSubsystem {
     private final Limelight3A limelight;
 
     // Raw Limelight values
@@ -25,7 +19,7 @@ public class LimeLightSubsystem {
     private boolean aimAssistEnabled = false;
 
     // Lime Light Instance Builder
-    public LimeLightSubsystem(HardwareMap hardwareMap) {
+    public VisionSubsystem(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         // Poll up to 100x per second for fresh data

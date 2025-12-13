@@ -76,9 +76,9 @@ public class mainTele extends LinearOpMode {
                 // Control the second intake
                 if (gamepad2.right_trigger > 0) {
                     //telemetry.addLine("Velocity= " + launcher.getVelocity());
-                    robot.shooter.startLauncher();
+                    robot.shooter.startOuttake();
                 } else {
-                    robot.shooter.stopLauncher();
+                    robot.shooter.stopOuttake();
                 }
             }
         

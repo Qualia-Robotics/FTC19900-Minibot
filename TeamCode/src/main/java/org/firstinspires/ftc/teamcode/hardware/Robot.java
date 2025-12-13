@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 //import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LimeLightSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.TurretSubsystem;
 
@@ -16,14 +16,14 @@ public class Robot {
 
     public TurretSubsystem turret;
 
-    public LimeLightSubsystem vision;
+    public VisionSubsystem vision;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
         // Initialize all subsystems in a controlled, predictable order
         turret = new TurretSubsystem(hardwareMap, telemetry);
         drive = new DriveSubsystem(hardwareMap);
         shooter = new ShooterSubsystem(hardwareMap);
-        vision = new LimeLightSubsystem(hardwareMap);
+        vision = new VisionSubsystem(hardwareMap);
         //intake = new IntakeSubsystem(hardwareMap);
     }
 

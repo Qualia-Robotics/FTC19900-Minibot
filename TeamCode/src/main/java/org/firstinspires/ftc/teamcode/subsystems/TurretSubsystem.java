@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -8,11 +10,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class TurretSubsystem {
-
-    private Servo turretServo;
-    private final double TurretMax = 0.85;
-    private final double TurretMin = 0.15;
-    private final double TurnSpeed = 0.1;
+    private final double turretMax = 0.85;
+    private final double turretMin = 0.15;
+    private final double turnSpeed = 0.8;
 
     private double TurretPos = 0;
 
@@ -20,8 +20,7 @@ public class TurretSubsystem {
 
     public enum State {AUTO, IDLE, MANUAL}
 
-    public final DcMotorEx null_motor;
-    public final Servo null_servo, null_servo_2;
+    private final CRServo turntableServo, leftVerticalServo, rightVerticalServo;
     private final int horizontalTolerance = 10;
     private final int verticalTolerance = 10;
 
@@ -38,31 +37,21 @@ public class TurretSubsystem {
     private boolean busy = false;
 
     public TurretSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
-        turretServo = hardwareMap.get(Servo.class, "turntableServo");
-        turretServo.setPosition(TurretPos);
-
-        null_motor = hardwareMap.get(DcMotorEx.class, "null");
-        null_servo = hardwareMap.get(Servo.class, "null_servo");
-        null_servo_2 = hardwareMap.get(Servo.class, "null_servo_2");
-
-        // Encoder logic -------------------------------------------------
-        null_motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        null_motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        turntableServo = hardwareMap.get(CRServo.class, "turntableServo");
+        leftVerticalServo = hardwareMap.get(CRServo.class, "leftVerticalServo");
+        rightVerticalServo = hardwareMap.get(CRServo.class, "rightVerticalServo");
 
         // Set directions (adjust if movement is inverted) ----------
-        null_motor.setDirection(DcMotorEx.Direction.REVERSE);
-        null_servo.setDirection(Servo.Direction.REVERSE);
-        null_servo_2.setDirection(Servo.Direction.REVERSE);
+        turntableServo.setDirection(CRServo.Direction.FORWARD);
+        leftVerticalServo.setDirection(CRServo.Direction.REVERSE);
+        rightVerticalServo.setDirection(CRServo.Direction.REVERSE);
 
-
-        // Set motor behavior ----------------------------------------------
-        null_motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-    }
+      }
     // Manual Aiming
     public void manualAiming(double horizontal, double vertical){
-        TurretPos += horizontal * TurnSpeed;
-        TurretPos = Math.max(TurretMin, Math.min(TurretMax, TurretPos));
-        turretServo.setPosition(TurretPos);
+        double turnPower = horizontal * turnSpeed;
+        turntableServo.setPower(turnPower);
+//
 
     }
 
@@ -74,25 +63,23 @@ public class TurretSubsystem {
         state = State.AUTO;
         busy = true;
 
-        null_motor.setTargetPositionTolerance(horizontalTolerance);
-        null_motor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-        currentHorizontalPosition = null_motor.getCurrentPosition();
-        currentVerticalPosition = null_servo.getPosition();
+        currentHorizontalPosition = turntableServo.getPower();
+        currentVerticalPosition = leftVerticalServo.getPower();
 
 
-        targetHorizontalPosition = 0;
-        targetVerticalPosition = 0;
-        if (targetHorizontalPosition > 0){
-            while (targetHorizontalPosition != currentHorizontalPosition) {
-                null_motor.setPower(0.5);
-            }
-        } else {
-            while (targetHorizontalPosition != currentHorizontalPosition) {
-                null_motor.setPower(-0.5);
-            }
-        }
-        null_servo.setPosition(targetVerticalPosition);
+//        targetHorizontalPosition = 0;
+//        targetVerticalPosition = 0;
+//        if (targetHorizontalPosition > 0){
+//            while (targetHorizontalPosition != currentHorizontalPosition) {
+//                //null_motor.setPower(0.5);
+//            }
+//        } else {
+//            while (targetHorizontalPosition != currentHorizontalPosition) {
+//                //null_motor.setPower(-0.5);
+//            }
+//        }
+//        lefVerticalServo.setPosition(targetVerticalPosition);
     }
 
 
