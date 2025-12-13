@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 //import org.firstinspires.ftc.teamcode.SimpleLedController;
@@ -25,11 +26,27 @@ public class mainTele extends LinearOpMode {
         telemetry.addLine("Ready to drive!");
 
         robot = new Robot(hardwareMap, telemetry);
-        
+
+
+//        double servPos =0.5;
+//        final double STEP = 0.01;
         waitForStart();
 
         while (opModeIsActive()) {
             robot.periodic();
+
+//            // Test Servo arm
+//            if (gamepad1.dpad_up) {
+//                servPos += STEP;
+//            } else if (gamepad1.dpad_down) {
+//                servPos -= STEP;
+//            }
+//            // Servo min, max values and change pos -------------------------------------
+//            // rn the max is causing it to go downwards and the min 0 value is being changed based upon the maximun
+//            servPos = Range.clip(servPos, 0.2, 0.9);
+//            robot.shooter.intakeArmServo.setPosition(servPos);
+//            telemetry.addData("Servo Position", servPos);
+
 
             // Read joystick Values  for Gamepad 1 --------------------------------------
             double forward = -gamepad1.left_stick_y; // Forward is negative on the stick
@@ -70,7 +87,7 @@ public class mainTele extends LinearOpMode {
                 } else {
                     robot.shooter.stopIntake();
                 }
-                if (gamepad2.right_bumper) {
+                if (gamepad2.dpad_up) {
                     robot.shooter.liftBall();
                 }
                 

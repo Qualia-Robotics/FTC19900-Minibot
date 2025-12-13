@@ -57,6 +57,8 @@ public class ShooterSubsystem {
         // Set motor directions (adjust if movement is inverted) ----------
         outtakeMotor.setDirection(DcMotorEx.Direction.REVERSE);
         intake.setDirection(DcMotor.Direction.REVERSE);
+        intakeArmServo.setDirection(Servo.Direction.REVERSE);
+
 
         // Set motor behavior ----------------------------------------------
         outtakeMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -176,11 +178,15 @@ public class ShooterSubsystem {
     public void stopIntake() {
         intake.setPower(0);
     }
+    private double pos;
 
     public void liftBall() throws InterruptedException {
-        intakeArmServo.setPosition(0.6);
-        sleep(10);
-        intakeArmServo.setPosition(0);
+        intakeArmServo.setPosition(0.5);
+        pos = intakeArmServo.getPosition();
+        sleep(900);
+        intakeArmServo.setPosition(0.8);
+        pos = intakeArmServo.getPosition();
+        sleep(100);
     }
 
     public void startOuttake() {
@@ -194,6 +200,7 @@ public class ShooterSubsystem {
     public void addTelemetry(Telemetry telemetry) {
         telemetry.addLine("----- Shooter -----");
         telemetry.addData("Shooter Velocity = ", lastVelocity);
+        telemetry.addData("Servo Position = ", pos);
     }
 
     public boolean isBusy() { return busy; }
