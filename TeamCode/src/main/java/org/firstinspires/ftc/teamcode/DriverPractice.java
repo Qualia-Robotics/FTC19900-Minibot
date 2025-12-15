@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name="DriverPractice", group="Linear OpMode")
 public class DriverPractice extends LinearOpMode {
-//asdfasdf
+
     // --- Gamepad 1 drive motors ---
     private DcMotor frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive;
 
