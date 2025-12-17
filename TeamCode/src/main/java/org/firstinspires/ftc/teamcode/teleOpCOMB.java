@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -15,16 +16,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.ObjectDetectionExamplesTeleop.ObeliskIntakeSystem;
 
 /**
  * Example TeleOp that uses the ObeliskIntakeSystem class
- * 
+ *
  * This demonstrates how to integrate the intake system into your existing TeleOp code
  */
 @TeleOp(name = "TeleOp with Intake System", group = "Examples")
 @Config
-public class ExampleTeleOpHardwareMap extends LinearOpMode {
-    
+public class teleOpCOMB extends LinearOpMode {
+
     // --- Gamepad 1 drive motors ---
     private DcMotor frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive;
 
@@ -159,7 +161,7 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
 
     // The intake decision system - just one line!
     private ObeliskIntakeSystem intakeSystem;
-    
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -180,10 +182,10 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
         intakeToShooter2 = hardwareMap.get(CRServo.class, "its2");
         intake = hardwareMap.get(Servo.class, "i");
         intake2 = hardwareMap.get(Servo.class, "i2");
-        
+
         // Initialize the intake system - just one line!
         intakeSystem = new ObeliskIntakeSystem(hardwareMap);
-        
+
         // Check if it initialized properly
         if (!intakeSystem.isInitialized()) {
             telemetry.addData("ERROR", "Intake system failed to initialize!");
@@ -230,7 +232,7 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
         frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        
+
         dashboard = FtcDashboard.getInstance();
         telemetry.addLine("Waiting for start...");
         telemetry.update();
@@ -247,9 +249,9 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
         imu.initialize(parameters);
 
         dtTimer.reset();
-        
+
         while (opModeIsActive()) {
-            
+
             // ========== YOUR EXISTING DRIVE CODE ==========
             updateOdometry();
             double batteryVoltage = getBatteryVoltage();
@@ -260,24 +262,24 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
 
             TelemetryPacket packet = new TelemetryPacket();
 
-           if (gamepad1.a && robot_centric) {
-               robot_centric = false;
-               field_centric = true;
-               sleep(200);
-               packet.put("field centric testing", field_centric);
-               packet.put("robot centric testing", robot_centric);
-               telemetry.addData("Robot centric active", robot_centric);
-               telemetry.addData("Field centric active", field_centric);
-           }
-           else if (gamepad1.a && field_centric) {
-               field_centric = false;
-               robot_centric = true;
-               sleep(200);
-               packet.put("robot centric testing", robot_centric);
-               packet.put("field centric testing", field_centric);
-               telemetry.addData("Robot centric active", robot_centric);
-               telemetry.addData("Field centric active", field_centric);
-           }
+            if (gamepad1.a && robot_centric) {
+                robot_centric = false;
+                field_centric = true;
+                sleep(200);
+                packet.put("field centric testing", field_centric);
+                packet.put("robot centric testing", robot_centric);
+                telemetry.addData("Robot centric active", robot_centric);
+                telemetry.addData("Field centric active", field_centric);
+            }
+            else if (gamepad1.a && field_centric) {
+                field_centric = false;
+                robot_centric = true;
+                sleep(200);
+                packet.put("robot centric testing", robot_centric);
+                packet.put("field centric testing", field_centric);
+                telemetry.addData("Robot centric active", robot_centric);
+                telemetry.addData("Field centric active", field_centric);
+            }
 
             dashboard.sendTelemetryPacket(packet);
 
@@ -325,7 +327,7 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
                 slow_mode = false;
             }
 
-             if (wheelBreak) {
+            if (wheelBreak) {
                 applyWheelBrake(frontLeftDrive, wheelBreakTargetFL);
                 applyWheelBrake(frontRightDrive, wheelBreakTargetFR);
                 applyWheelBrake(backLeftDrive, wheelBreakTargetBL);
@@ -364,7 +366,7 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
                 double y = -gamepad1.left_stick_y * nerf;
                 double x = gamepad1.left_stick_x * nerf;
                 double rx = gamepad1.right_stick_x * nerf;
-                
+
                 if (gamepad1.start) {
                     imu.resetYaw();
                 }
@@ -392,11 +394,11 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
             handleIntake();
             handleShooter();
             handleShooterHinge();
-            
+
             // ========== OBELISK INTAKE SYSTEM INTEGRATION ==========
             // Update the intake system
             intakeSystem.update();
-            
+
             // Control intake based on the decision
             if (intakeSystem.shouldPickup()) {
                 intake.setPosition(1.0);  // Run intake
@@ -405,7 +407,7 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
                 intake.setPosition(0);  // Stop intake
                 intake2.setPosition(0);
             }
-            
+
             // --- Dashboard telemetry ---
             sendDashboardTelemetry(batteryVoltage);
             intakeSystem.sendTelemetry(telemetry);
@@ -422,19 +424,19 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
         motor.setPower(power);
     }
 
-   private void handleIntake() {
-       if (gamepad2.left_bumper && !intakeIn) {
-           sleep(200);
-           intake.setPosition(intake_position_in);
-           intake2.setPosition(intake_position_in);
-           intakeIn = true;
-       } else if (gamepad2.left_bumper && intakeIn) {
-           sleep(200);
-           intake.setPosition(intake_position_out);
-           intake2.setPosition(intake_position_out);
-           intakeIn = false;
-       }
-   }
+    private void handleIntake() {
+        if (gamepad2.left_bumper && !intakeIn) {
+            sleep(200);
+            intake.setPosition(intake_position_in);
+            intake2.setPosition(intake_position_in);
+            intakeIn = true;
+        } else if (gamepad2.left_bumper && intakeIn) {
+            sleep(200);
+            intake.setPosition(intake_position_out);
+            intake2.setPosition(intake_position_out);
+            intakeIn = false;
+        }
+    }
 
     private void handleShooter() {
         if (gamepad2.right_trigger > 0.2) {
@@ -442,7 +444,7 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
             double dt = dtTimer.seconds();
             intakeToShooter.setPower(intakeToShooter_power);
             intakeToShooter2.setPower(intakeToShooter_power);
-            
+
             if (dt < 0.001) dt = 0.001;
             dtTimer.reset();
 
@@ -479,13 +481,13 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
         }
     }
 
-   private void handleShooterHinge() {
-       if (gamepad2.a) {
-           sleep(200);
-           shooterUp = !shooterUp;
-           shooterHinge.setPosition(shooterUp ? 1 : 0);
-       }
-   }
+    private void handleShooterHinge() {
+        if (gamepad2.a) {
+            sleep(200);
+            shooterUp = !shooterUp;
+            shooterHinge.setPosition(shooterUp ? 1 : 0);
+        }
+    }
 
     private void sendDashboardTelemetry(double batteryVoltage) {
         TelemetryPacket packet = new TelemetryPacket();

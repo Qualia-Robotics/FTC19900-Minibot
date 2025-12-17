@@ -9,6 +9,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -718,7 +719,7 @@ public class CPUplsCookExpansiveV_CS extends LinearOpMode {
 
         packet.put("Erik is a ", "Big Dumb");
 
-        packet.put("THIS IS FOR OLD ROBOT DO NOT USE");
+        packet.put("THIS IS FOR OLD ROBOT DO NOT USE", "je");
 
         dashboard.sendTelemetryPacket(packet);
 
@@ -744,7 +745,7 @@ public class CPUplsCookExpansiveV_CS extends LinearOpMode {
         telemetry.addData("Detected", currentDetectedColor);
 
 
-        telemetry.addData("THIS IS FOR OLD ROBOT DO NOT USE");
+        telemetry.addData("THIS IS FOR OLD ROBOT DO NOT USE", "asdf");
 
         telemetry.addLine("\nErik is a Big Dumb");
     }

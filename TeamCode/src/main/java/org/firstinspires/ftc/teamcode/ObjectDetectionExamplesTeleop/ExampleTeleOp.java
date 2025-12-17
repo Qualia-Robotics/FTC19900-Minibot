@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.ObjectDetectionExamplesTeleop;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.firstinspires.ftc.teamcode.ObeliskIntakeSystem;
+import org.firstinspires.ftc.teamcode.ObjectDetectionExamplesTeleop.ObeliskIntakeSystem;
 
 /**
  * Example TeleOp that uses the ObeliskIntakeSystem class

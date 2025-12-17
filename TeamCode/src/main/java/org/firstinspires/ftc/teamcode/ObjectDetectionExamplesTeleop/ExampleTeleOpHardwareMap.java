@@ -1,9 +1,22 @@
 package org.firstinspires.ftc.teamcode.ObjectDetectionExamplesTeleop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+//import com.google.blocks.ftcrobotcontroller.runtime.BNO055IMUAccess;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.firstinspires.ftc.teamcode.ObeliskIntakeSystem;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.ObjectDetectionExamplesTeleop.ObeliskIntakeSystem;
 
 /**
  * Example TeleOp that uses the ObeliskIntakeSystem class
@@ -28,10 +41,12 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
     public static int wheelBreak_maxError = 100;
 
     // --- Odometry encoders (no motors attached, just encoder readings) ---
-    private DcMotor flywheel, odoleft, odoright, odoperp;
+    private DcMotorEx flywheel;
+    private DcMotor odoleft, odoright, odoperp;
     // private DcMotorEx flywheel;
-    //    private Servo shooterHinge;
-    private CRServo intakeToShooter, intakeToShooter2, intake, intake2;
+    private Servo shooterHinge;
+    private CRServo intakeToShooter, intakeToShooter2;
+    private Servo intake, intake2;
 
     public static boolean intakeIn = false;
     public static boolean shooterActive = false;
@@ -498,15 +513,35 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
        if (gamepad2.left_bumper && !intakeIn) {
            sleep(200);
            intake.setPosition(intake_position_in);
-           intake2.setPower(intake_position_in);
+           intake2.setPosition(intake_position_in);
            intakeIn = true;
        } else if (gamepad2.left_bumper && intakeIn) {
            sleep(200);
            intake.setPosition(intake_position_out);
-           intake2.setPower(intake_position_out);
+           intake2.setPosition(intake_position_out);
            intakeIn = false;
        }
    }
+
+//    private void sendDashboardTelemetry(double batteryVoltage) {
+//        TelemetryPacket packet = new TelemetryPacket();
+//        packet.put("Odometry X (in)", xPos);
+//        packet.put("Odometry Y (in)", yPos);
+//        packet.put("Odometry Heading (rad)", heading);
+//        packet.put("Shooter Target RPM", targetRPM);
+//        packet.put("Shooter Current RPM", currentRPM);
+//        packet.put("Shooter Error", error);
+//        packet.put("Shooter Output", output);
+//        packet.put("Battery Voltage", batteryVoltage);
+//        dashboard.sendTelemetryPacket(packet);
+//    }
+    private void handleShooterHinge() {
+        if (gamepad2.a) {
+            sleep(200);
+            shooterUp = !shooterUp;
+            shooterHinge.setPosition(shooterUp ? 1 : 0);
+        }
+    }
 
     private void handleShooter() {
         if (gamepad2.right_trigger > 0.2) {
@@ -558,28 +593,8 @@ public class ExampleTeleOpHardwareMap extends LinearOpMode {
             intakeToShooter.setPower(0);
             intakeToShooter2.setPower(0);
             flywheel.setPower(idlePower);
-            // gets to speed faster if always on reduced speed to save battery 
+            // gets to speed faster if always on reduced speed to save battery
         }
-    }
-
-   private void handleShooterHinge() {
-       if (gamepad2.a) {
-           sleep(200);
-           shooterUp = !shooterUp;
-           shooterHinge.setPosition(shooterUp ? 1 : 0);
-       }
-   }
-    private void sendDashboardTelemetry(double batteryVoltage) {
-         TelemetryPacket packet = new TelemetryPacket();
-         packet.put("Odometry X (in)", xPos);
-         packet.put("Odometry Y (in)", yPos);
-         packet.put("Odometry Heading (rad)", heading);
-         packet.put("Shooter Target RPM", targetRPM);
-         packet.put("Shooter Current RPM", currentRPM);
-         packet.put("Shooter Error", error);
-         packet.put("Shooter Output", output);
-         packet.put("Battery Voltage", batteryVoltage);
-         dashboard.sendTelemetryPacket(packet);
     }
 
     private void sendDashboardTelemetry(double batteryVoltage) {
