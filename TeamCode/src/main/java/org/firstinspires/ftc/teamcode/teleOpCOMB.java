@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.ObjectDetectionExamplesTeleop.ObeliskIntak
  *
  * This demonstrates how to integrate the intake system into your existing TeleOp code
  */
-@TeleOp(name = "TeleOp with Intake System", group = "Examples")
+@TeleOp(name = "TeleOp Comb", group = "Examples")
 @Config
 public class teleOpCOMB extends LinearOpMode {
 
@@ -252,6 +252,9 @@ public class teleOpCOMB extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            handleIntake();
+            handleShooter();
+
             // ========== YOUR EXISTING DRIVE CODE ==========
             updateOdometry();
             double batteryVoltage = getBatteryVoltage();
@@ -400,13 +403,13 @@ public class teleOpCOMB extends LinearOpMode {
             intakeSystem.update();
 
             // Control intake based on the decision
-            if (intakeSystem.shouldPickup()) {
-                intake.setPosition(1.0);  // Run intake
-                intake2.setPosition(1.0);
-            } else {
-                intake.setPosition(0);  // Stop intake
-                intake2.setPosition(0);
-            }
+//            if (intakeSystem.shouldPickup()) {
+//                intake.setPosition(1.0);  // Run intake
+//                intake2.setPosition(1.0);
+//            } else {
+//                intake.setPosition(0);  // Stop intake
+//                intake2.setPosition(0);
+//            }
 
             // --- Dashboard telemetry ---
             sendDashboardTelemetry(batteryVoltage);

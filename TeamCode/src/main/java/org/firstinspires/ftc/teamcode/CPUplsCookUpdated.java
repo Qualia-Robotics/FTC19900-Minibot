@@ -52,7 +52,7 @@ total                   5x motors
 @TeleOp(name="CPUplsCookUpdated", group="Drive Train")
 @Config
 // @Disabled
-public class CPUplsCookExpansive extends LinearOpMode {
+public class CPUplsCookUpdated extends LinearOpMode {
 
     // --- Gamepad 1 drive motors ---
     private DcMotor frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive;
@@ -65,10 +65,11 @@ public class CPUplsCookExpansive extends LinearOpMode {
     public static int wheelBreak_maxError = 100;
 
     // --- Odometry encoders (no motors attached, just encoder readings) ---
-    private DcMotor flywheel, odoleft, odoright, odoperp;
+    private DcMotorEx flywheel;
+    private DcMotor odoleft, odoright, odoperp;
     // private DcMotorEx flywheel;
-//    private Servo shooterHinge;
-    private CRServo intakeToShooter, intakeToShooter2, intake, intake2;
+    private Servo shooterHinge, intake, intake2;
+    private CRServo intakeToShooter, intakeToShooter2;
 
     public static boolean intakeIn = false;
     public static boolean shooterActive = false;
@@ -523,12 +524,12 @@ public class CPUplsCookExpansive extends LinearOpMode {
        if (gamepad2.left_bumper && !intakeIn) {
            sleep(200);
            intake.setPosition(intake_position_in);
-           intake2.setPower(intake_position_in);
+           intake2.setPosition(intake_position_in);
            intakeIn = true;
        } else if (gamepad2.left_bumper && intakeIn) {
            sleep(200);
            intake.setPosition(intake_position_out);
-           intake2.setPower(intake_position_out);
+           intake2.setPosition(intake_position_out);
            intakeIn = false;
        }
    }
