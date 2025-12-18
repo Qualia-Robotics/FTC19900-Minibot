@@ -33,10 +33,15 @@ public class Tele_Op extends LinearOpMode {
 
             double leftPower = -leftAxis;
             double rightPower = rightAxis;
+            double motpow = gamepad1.left_trigger;
+            Motor.setPower(motpow);
 
             LeftDrive.setPower(leftPower);
             RightDrive.setPower(rightPower);
-
+            if (gamepad1.triangle) {
+                Motor.setPower(-0.8);
+            }
+            }
             telemetry.update();
         }
     }
