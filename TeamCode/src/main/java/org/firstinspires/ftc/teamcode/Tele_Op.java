@@ -19,10 +19,10 @@ public class Tele_Op extends LinearOpMode {
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        // Wait for the game to start (driver presses PLAY)
+
         waitForStart();
 
-        // run until the end of the match (driver presses STOP)
+
         while (opModeIsActive()) {
             //DRIVETRAIN CODE
             double leftAxis = -gamepad1.left_stick_y;
