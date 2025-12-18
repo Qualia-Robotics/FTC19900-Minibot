@@ -11,11 +11,14 @@ public class Tele_Op extends LinearOpMode {
     private DcMotor LeftDrive;
     private DcMotor RightDrive;
 
+    private DcMotor Motor;
+
 
     @Override
     public void runOpMode() {
         LeftDrive = hardwareMap.get(DcMotor.class, "LeftDrive");
         RightDrive = hardwareMap.get(DcMotor.class, "RightDrive");
+        Motor = hardwareMap.get(DcMotor.class, "Motor");
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
