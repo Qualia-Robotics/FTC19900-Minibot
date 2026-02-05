@@ -8,7 +8,7 @@ public class Teleop_Max extends OpMode {
 
     @Override
     public void init(){
-        telemetry.addData("Hello", "Roman");
+        telemetry.addData("Hello", "Max");
     }
 
     @Override
