@@ -6,18 +6,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 
-@TeleOp (name ="Teleop_Max",group="1(Main OpModes")
-public class Teleop_Max extends LinearOpMode {
-        private DcMotor LeftDrive;
-    private DcMotor RightDrive;
+@TeleOp (name ="MotorTester",group="1(Main OpModes")
+public class MotorTester extends LinearOpMode {
 
     private DcMotor Motor;
 
 
     @Override
     public void runOpMode() {
-        LeftDrive = hardwareMap.get(DcMotor.class, "LeftDrive");
-        RightDrive = hardwareMap.get(DcMotor.class, "RightDrive");
         Motor = hardwareMap.get(DcMotor.class, "Motor");
 
         telemetry.addData("Status", "Initialized");
@@ -27,19 +23,15 @@ public class Teleop_Max extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            //DRIVETRAIN CODE
-            double leftAxis = -gamepad1.left_stick_y;
-            double rightAxis = -gamepad1.right_stick_y;
 
-            double leftPower = -leftAxis;
-            double rightPower = rightAxis;
             double motpow = gamepad1.left_trigger;
             Motor.setPower(motpow);
-           LeftDrive.setPower(leftPower);
-            RightDrive.setPower(rightPower);
-            if (gamepad1.triangle) {
+            /*if (gamepad1.triangle) {
                 Motor.setPower(-0.8);
             }
+            if (gamepad1.circle) {
+                Motor.setPower(0.8);
+            }*/
         }
         telemetry.update();
     }
